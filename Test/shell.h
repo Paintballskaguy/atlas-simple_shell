@@ -1,4 +1,3 @@
-
 #ifndef SHELL_H
 #define SHELL_H
 
@@ -9,16 +8,16 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <errno.h>
-#include <termios.h> /*linux*/
-#include <sys/wait.h> /*linux*/
+/*#include <termios.h>*/
+/*#include <errno.h>*/
+/*#include <sys/wait.h>*/  /*Linux directories. not windows.*/
 
 #include "wait_functions.h"
 
-#define LIMIT 256 // Max number of tokens for a command
-#define MAXLINE 1024 // Max number of characters from user input
+#define LIMIT 256 /* Max number of tokens for a command */
+#define MAXLINE 1024 /* Max number of characters from user input */
 
-// Global variables
+/* Global variables */
 extern pid_t GBSH_PID;
 extern pid_t GBSH_PGID;
 extern struct termios GBSH_TMODES;
@@ -28,7 +27,7 @@ extern pid_t pid;
 extern int numTokens;
 extern int no_reprint_prmpt;
 
-// Command struct
+/* Command struct */
 typedef struct Command {
     char *args[LIMIT];
     char *inputFile;
@@ -38,7 +37,7 @@ typedef struct Command {
     struct Command *prev;
 } Command;
 
-// Function prototypes
+/* Function prototypes */
 void init();
 void welcome_screen();
 void signal_handler_child(int p);

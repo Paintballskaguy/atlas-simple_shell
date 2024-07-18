@@ -1,6 +1,6 @@
 #include "shell.h"
 
-// History linked list
+/* History linked list */
 extern Command *historyHead;
 extern Command *historyTail;
 
@@ -38,7 +38,7 @@ void print_history() {
 }
 
 void free_command(Command *cmd) {
-    // Clean up dynamically allocated Command struct
+    /* Clean up dynamically allocated Command struct */
     free(cmd);
 }
 

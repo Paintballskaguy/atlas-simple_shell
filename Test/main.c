@@ -1,6 +1,6 @@
 #include "shell.h"
 
-// Global variables
+/* Global variables */
 pid_t GBSH_PID;
 pid_t GBSH_PGID;
 struct termios GBSH_TMODES;
@@ -10,7 +10,7 @@ pid_t pid;
 int numTokens;
 int no_reprint_prmpt = 0;
 
-// History linked list
+/* History linked list */
 Command *historyHead = NULL;
 Command *historyTail = NULL;
 
