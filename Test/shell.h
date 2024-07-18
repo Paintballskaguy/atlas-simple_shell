@@ -10,6 +10,8 @@
 #include <signal.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <termios.h> /*linux*/
+#include <sys/wait.h> /*linux*/
 
 #include "wait_functions.h"
 
