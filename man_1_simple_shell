@@ -1,0 +1,379 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+#include <sys/types.h>
+#include <signal.h>
+#include <fcntl.h>
+#include <termios.h>
+#include <errno.h>
+#include "wait_functions.h"  // Include the custom wait functions header
+
+#define LIMIT 256 // Max number of tokens for a command
+#define MAXLINE 1024 // Max number of characters from user input
+
+// Global variables
+pid_t GBSH_PID;
+pid_t GBSH_PGID;
+struct termios GBSH_TMODES;
+int GBSH_IS_INTERACTIVE;
+char *currentDirectory;
+pid_t pid;
+int numTokens;
+int no_reprint_prmpt = 0;
+
+// Command struct
+typedef struct Command {
+    char *args[LIMIT];
+    char *inputFile;
+    char *outputFile;
+    int background;
+    struct Command *next;
+    struct Command *prev;
+} Command;
+
+// History linked list
+Command *historyHead = NULL;
+Command *historyTail = NULL;
+
+// Function prototypes
+void init();
+void welcomeScreen();
+void signalHandler_child(int p);
+void signalHandler_int(int p);
+void shellPrompt();
+int changeDirectory(char* args[]);
+int manageEnviron(char * args[], int option);
+void launchProg(Command *cmd);
+void fileIO(Command *cmd, int option);
+int commandHandler(Command *cmd);
+void tokenize(char *line, Command *cmd);
+void addHistory(Command *cmd);
+void printHistory();
+void freeCommand(Command *cmd);
+void handleSequence(Command *cmd);
+
+void init() {
+    GBSH_PID = getpid();
+    GBSH_IS_INTERACTIVE = isatty(STDIN_FILENO);
+
+    if (GBSH_IS_INTERACTIVE) {
+        while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp())) {
+            kill(GBSH_PID, SIGTTIN);
+        }
+
+        struct sigaction act_child;
+        struct sigaction act_int;
+
+        act_child.sa_handler = signalHandler_child;
+        act_int.sa_handler = signalHandler_int;
+
+        sigaction(SIGCHLD, &act_child, 0);
+        sigaction(SIGINT, &act_int, 0);
+
+        setpgid(GBSH_PID, GBSH_PID);
+        GBSH_PGID = getpgrp();
+
+        if (GBSH_PID != GBSH_PGID) {
+            printf("Error, the shell is not process group leader");
+            exit(EXIT_FAILURE);
+        }
+
+        tcsetpgrp(STDIN_FILENO, GBSH_PGID);
+        tcgetattr(STDIN_FILENO, &GBSH_TMODES);
+
+        currentDirectory = (char*) calloc(1024, sizeof(char));
+    } else {
+        printf("Could not make the shell interactive.\n");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void welcomeScreen() {
+    printf("\n\t============================================\n");
+    printf("\t               Turtle Shell\n");
+    printf("\t--------------------------------------------\n");
+    printf("\t             Licensed under GPLv3:\n");
+    printf("\t============================================\n");
+    printf("\n\n");
+}
+
+void signalHandler_child(int p) {
+    wait_child_processes();
+    printf("\n");
+}
+
+void signalHandler_int(int p) {
+    if (kill(pid, SIGTERM) == 0) {
+        printf("\nProcess %d received a SIGINT signal\n", pid);
+        no_reprint_prmpt = 1;
+    } else {
+        printf("\n");
+    }
+}
+
+void shellPrompt() {
+    char hostn[1204] = "";
+    gethostname(hostn, sizeof(hostn));
+    printf("%s@%s %s > ", getenv("LOGNAME"), hostn, getcwd(currentDirectory, 1024));
+}
+
+int changeDirectory(char* args[]) {
+    if (args[1] == NULL) {
+        chdir(getenv("HOME"));
+        return 1;
+    } else {
+        if (chdir(args[1]) == -1) {
+            printf(" %s: no such directory\n", args[1]);
+            return -1;
+        }
+    }
+    return 0;
+}
+
+int manageEnviron(char * args[], int option) {
+    char **env_aux;
+    switch (option) {
+        case 0:
+            for (env_aux = environ; *env_aux != 0; env_aux++) {
+                printf("%s\n", *env_aux);
+            }
+            break;
+        case 1:
+            if ((args[1] == NULL) && args[2] == NULL) {
+                printf("%s", "Not enough input arguments\n");
+                return -1;
+            }
+
+            if (getenv(args[1]) != NULL) {
+                printf("%s", "The variable has been overwritten\n");
+            } else {
+                printf("%s", "The variable has been created\n");
+            }
+
+            if (args[2] == NULL) {
+                setenv(args[1], "", 1);
+            } else {
+                setenv(args[1], args[2], 1);
+            }
+            break;
+        case 2:
+            if (args[1] == NULL) {
+                printf("%s", "Not enough input arguments\n");
+                return -1;
+            }
+            if (getenv(args[1]) != NULL) {
+                unsetenv(args[1]);
+                printf("%s", "The variable has been erased\n");
+            } else {
+                printf("%s", "The variable does not exist\n");
+            }
+            break;
+    }
+    return 0;
+}
+
+void launchProg(Command *cmd) {
+    int err = -1;
+
+    if ((pid = fork()) == -1) {
+        printf("Child process could not be created\n");
+        return;
+    }
+
+    if (pid == 0) {
+        signal(SIGINT, SIG_IGN);
+        setenv("parent", getcwd(currentDirectory, 1024), 1);
+
+        if (cmd->inputFile) {
+            int fd = open(cmd->inputFile, O_RDONLY);
+            if (fd == -1) {
+                perror("open input file");
+                exit(EXIT_FAILURE);
+            }
+            dup2(fd, STDIN_FILENO);
+            close(fd);
+        }
+
+        if (cmd->outputFile) {
+            int fd = open(cmd->outputFile, O_CREAT | O_WRONLY | O_TRUNC, 0644);
+            if (fd == -1) {
+                perror("open output file");
+                exit(EXIT_FAILURE);
+            }
+            dup2(fd, STDOUT_FILENO);
+            close(fd);
+        }
+
+        if (execvp(cmd->args[0], cmd->args) == err) {
+            printf("Command not found\n");
+            kill(getpid(), SIGTERM);
+        }
+    }
+
+    if (cmd->background == 0) {
+        waitpid_wrapper(pid, NULL, 0);
+    } else {
+        printf("Process created with PID: %d\n", pid);
+    }
+}
+
+void fileIO(Command *cmd, int option) {
+    int err = -1;
+
+    if ((pid = fork()) == -1) {
+        printf("Child process could not be created\n");
+        return;
+    }
+    if (pid == 0) {
+        if (option == 0 && cmd->outputFile) {
+            int fd = open(cmd->outputFile, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+            dup2(fd, STDOUT_FILENO);
+            close(fd);
+        } else if (option == 1) {
+            if (cmd->inputFile) {
+                int fd = open(cmd->inputFile, O_RDONLY, 0600);
+                dup2(fd, STDIN_FILENO);
+                close(fd);
+            }
+
+            if (cmd->outputFile) {
+                int fd = open(cmd->outputFile, O_CREAT | O_TRUNC | O_WRONLY, 0600);
+                dup2(fd, STDOUT_FILENO);
+                close(fd);
+            }
+        }
+
+        setenv("parent", getcwd(currentDirectory, 1024), 1);
+
+        if (execvp(cmd->args[0], cmd->args) == err) {
+            printf("err");
+            kill(getpid(), SIGTERM);
+        }
+    }
+    waitpid_wrapper(pid, NULL, 0);
+}
+
+int commandHandler(Command *cmd) {
+    if (strcmp(cmd->args[0], "exit") == 0) exit(0);
+    else if (strcmp(cmd->args[0], "pwd") == 0) {
+        if (cmd->outputFile) {
+            fileIO(cmd, 0);
+        } else {
+            printf("%s\n", getcwd(currentDirectory, 1024));
+        }
+    } else if (strcmp(cmd->args[0], "clear") == 0) system("clear");
+    else if (strcmp(cmd->args[0], "cd") == 0) changeDirectory(cmd->args);
+    else if (strcmp(cmd->args[0], "environ") == 0) manageEnviron(cmd->args, 0);
+    else if (strcmp(cmd->args[0], "setenv") == 0) manageEnviron(cmd->args, 1);
+    else if (strcmp(cmd->args[0], "unsetenv") == 0) manageEnviron(cmd->args, 2);
+    else {
+        if (cmd->inputFile || cmd->outputFile) {
+            fileIO(cmd, 1);
+        } else {
+            launchProg(cmd);
+        }
+    }
+    return 1;
+}
+
+void tokenize(char *line, Command *cmd) {
+    int i = 0;
+    numTokens = 0;
+    char *token = strtok(line, " \t\r\n\a");
+
+    while (token != NULL) {
+        if (strcmp(token, "<") == 0) {
+            token = strtok(NULL, " \t\r\n\a");
+            cmd->inputFile = token;
+        } else if (strcmp(token, ">") == 0) {
+            token = strtok(NULL, " \t\r\n\a");
+            cmd->outputFile = token;
+        } else if (strcmp(token, "&") == 0) {
+            cmd->background = 1;
+        } else {
+            cmd->args[i] = token;
+            i++;
+        }
+        token = strtok(NULL, " \t\r\n\a");
+    }
+    cmd->args[i] = NULL;
+    numTokens = i;
+}
+
+void addHistory(Command *cmd) {
+    Command *newCmd = malloc(sizeof(Command));
+    memcpy(newCmd, cmd, sizeof(Command));
+    newCmd->next = NULL;
+
+    if (historyTail == NULL) {
+        historyHead = newCmd;
+        historyTail = newCmd;
+        newCmd->prev = NULL;
+    } else {
+        historyTail->next = newCmd;
+        newCmd->prev = historyTail;
+        historyTail = newCmd;
+    }
+}
+
+void printHistory() {
+    Command *temp = historyHead;
+    int i = 1;
+    while (temp != NULL) {
+        printf("%d: ", i);
+        for (int j = 0; temp->args[j] != NULL; j++) {
+            printf("%s ", temp->args[j]);
+        }
+        if (temp->inputFile) printf("< %s ", temp->inputFile);
+        if (temp->outputFile) printf("> %s ", temp->outputFile);
+        if (temp->background) printf("&");
+        printf("\n");
+        temp = temp->next;
+        i++;
+    }
+}
+
+void freeCommand(Command *cmd) {
+    // Clean up dynamically allocated Command struct
+    free(cmd);
+}
+
+void handleSequence(Command *cmd) {
+    Command *nextCmd = cmd->next;
+    if (commandHandler(cmd) == 1 && nextCmd != NULL) {
+        handleSequence(nextCmd);
+    }
+}
+
+int main() {
+    char line[MAXLINE];
+    Command *cmd;
+    numTokens = 0;
+
+    init();
+    welcomeScreen();
+
+    while (1) {
+        cmd = malloc(sizeof(Command));
+        memset(cmd, 0, sizeof(Command));
+
+        shellPrompt();
+        memset(line, '\0', MAXLINE);
+        fgets(line, MAXLINE, stdin);
+        line[strlen(line) - 1] = '\n';
+        tokenize(line, cmd);
+
+        if (strcmp(cmd->args[0], "history") == 0) {
+            printHistory();
+        } else {
+            addHistory(cmd);
+            handleSequence(cmd);
+        }
+
+        freeCommand(cmd);
+    }
+
+    free(currentDirectory);
+    return 0;
+}
