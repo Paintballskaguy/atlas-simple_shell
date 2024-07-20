@@ -1,5 +1,4 @@
 #include "shell.h"
-#include <unistd.h> /* Include this for gethostname */
 
 /**
  * shell_prompt - Display the shell prompt

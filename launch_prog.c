@@ -1,8 +1,4 @@
 #include "shell.h"
-#include <unistd.h> /* Include this for fork, setenv, getcwd, and other POSIX functions */
-#include <stdlib.h> /* Include this for setenv */
-#include <stdio.h> /* Include this for printf */
-#include <signal.h> /* Include this for kill */
 
 /**
  * launch_prog - Launch a program
