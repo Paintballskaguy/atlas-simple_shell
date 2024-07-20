@@ -1,8 +1,8 @@
 #include "shell.h"
-#include <unistd.h> /* Include this for fork, setpgid, getpgrp, etc. */
-#include <signal.h> /* Include this for sigaction, SIGCHLD, etc. */
-#include <termios.h> /* Include this for tcgetattr, tcsetattr, etc. */
-#include <stdlib.h> /* Include this for calloc */
+#include <unistd.h>
+#include <signal.h>
+#include <termios.h>
+#include <stdlib.h>
 #include <stdio.h>
 
 /**
@@ -10,65 +10,78 @@
  */
 void init(void)
 {
-	struct sigaction act_child;
-	struct sigaction act_int;
+    struct sigaction act_child;
+    struct sigaction act_int;
 
-	GBSH_PID = getpid();
-	GBSH_IS_INTERACTIVE = isatty(STDIN_FILENO);
+    printf("Initializing shell...\n");
 
-	if (GBSH_IS_INTERACTIVE)
-	{
-		while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp()))
-		{
-			kill(GBSH_PID, SIGTTIN);
-		}
+    GBSH_PID = getpid();
+    printf("Shell PID: %d\n", GBSH_PID);
 
-		act_child.sa_handler = signal_handler_child;
-		act_int.sa_handler = signal_handler_int;
-		sigemptyset(&act_child.sa_mask);
-		sigemptyset(&act_int.sa_mask);
-		act_child.sa_flags = 0;
-		act_int.sa_flags = 0;
+    GBSH_IS_INTERACTIVE = isatty(STDIN_FILENO);
+    printf("Interactive: %d\n", GBSH_IS_INTERACTIVE);
 
-		if (sigaction(SIGCHLD, &act_child, NULL) == -1) {
-			perror("sigaction");
-			exit(EXIT_FAILURE);
-		}
-		if (sigaction(SIGINT, &act_int, NULL) == -1) {
-			perror("sigaction");
-			exit(EXIT_FAILURE);
-		}
+    if (GBSH_IS_INTERACTIVE)
+    {
+        while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp()))
+        {
+            printf("Waiting for terminal control...\n");
+            kill(GBSH_PID, SIGTTIN);
+        }
 
-		if (setpgid(GBSH_PID, GBSH_PID) < 0) {
-			perror("setpgid");
-			exit(EXIT_FAILURE);
-		}
-		GBSH_PGID = getpgrp();
+        act_child.sa_handler = signal_handler_child;
+        act_int.sa_handler = signal_handler_int;
+        sigemptyset(&act_child.sa_mask);
+        sigemptyset(&act_int.sa_mask);
+        act_child.sa_flags = 0;
+        act_int.sa_flags = 0;
 
-		if (GBSH_PID != GBSH_PGID)
-		{
-			fprintf(stderr, "Error: the shell is not process group leader\n");
-			exit(EXIT_FAILURE);
-		}
+        if (sigaction(SIGCHLD, &act_child, NULL) == -1) {
+            perror("sigaction SIGCHLD");
+            exit(EXIT_FAILURE);
+        }
+        if (sigaction(SIGINT, &act_int, NULL) == -1) {
+            perror("sigaction SIGINT");
+            exit(EXIT_FAILURE);
+        }
 
-		if (tcsetpgrp(STDIN_FILENO, GBSH_PGID) == -1) {
-			perror("tcsetpgrp");
-			exit(EXIT_FAILURE);
-		}
-		if (tcgetattr(STDIN_FILENO, &GBSH_TMODES) == -1) {
-			perror("tcgetattr");
-			exit(EXIT_FAILURE);
-		}
+        if (setpgid(GBSH_PID, GBSH_PID) < 0) {
+            perror("setpgid");
+            exit(EXIT_FAILURE);
+        }
+        GBSH_PGID = getpgrp();
+        printf("Process group ID: %d\n", GBSH_PGID);
 
-		currentDirectory = (char *)calloc(1024, sizeof(char));
-		if (currentDirectory == NULL) {
-			perror("calloc");
-			exit(EXIT_FAILURE);
-		}
-	}
-	else
-	{
-		fprintf(stderr, "Error: shell is not running in an interactive mode (isatty failed).\n");
-		exit(EXIT_FAILURE);
-	}
+        if (GBSH_PID != GBSH_PGID)
+        {
+            fprintf(stderr, "Error: the shell is not process group leader\n");
+            exit(EXIT_FAILURE);
+        }
+
+        if (tcsetpgrp(STDIN_FILENO, GBSH_PGID) == -1) {
+            perror("tcsetpgrp");
+            exit(EXIT_FAILURE);
+        }
+        if (tcgetattr(STDIN_FILENO, &GBSH_TMODES) == -1) {
+            perror("tcgetattr");
+            exit(EXIT_FAILURE);
+        }
+
+        currentDirectory = (char *)calloc(1024, sizeof(char));
+        if (currentDirectory == NULL) {
+            perror("calloc");
+            exit(EXIT_FAILURE);
+        }
+    }
+    else
+    {
+        fprintf(stderr, "Warning: shell is not running in an interactive mode (isatty failed).\n");
+        /* Allow the shell to continue for testing purposes */
+        currentDirectory = (char *)calloc(1024, sizeof(char));
+        if (currentDirectory == NULL) {
+            perror("calloc");
+            exit(EXIT_FAILURE);
+        }
+    }
 }
+
