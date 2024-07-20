@@ -1,7 +1,8 @@
 #include "shell.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+
+/**
+ * main - Entry point for the shell
+ */
 
 int main(void)
 {
@@ -26,19 +27,11 @@ int main(void)
         shell_prompt();
         if (getline(&line, &len, stdin) == -1)
         {
-            if (feof(stdin))
-            {
-                free(cmd);
-                free(line);
-                exit(EXIT_SUCCESS);
-            }
-            else
-            {
-                perror("getline");
-                free(cmd);
-                free(line);
-                exit(EXIT_FAILURE);
-            }
+            if (errno == EINTR)
+                continue; /* Interrupted by signal, continue reading */
+            free(cmd);
+            free(line);
+            exit(EXIT_SUCCESS);
         }
 
         tokenize(line, cmd);

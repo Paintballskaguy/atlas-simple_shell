@@ -1,13 +1,9 @@
 #include "shell.h"
-#include <unistd.h>
-#include <signal.h>
-#include <termios.h>
-#include <stdlib.h>
-#include <stdio.h>
 
 /**
  * init - Initialize the shell
  */
+
 void init(void)
 {
     struct sigaction act_child;
@@ -67,21 +63,23 @@ void init(void)
             exit(EXIT_FAILURE);
         }
 
-        currentDirectory = (char *)calloc(1024, sizeof(char));
+        currentDirectory = (char *)malloc(1024 * sizeof(char));
         if (currentDirectory == NULL) {
-            perror("calloc");
+            perror("malloc");
             exit(EXIT_FAILURE);
         }
+        memset(currentDirectory, 0, 1024 * sizeof(char));
     }
     else
     {
         fprintf(stderr, "Warning: shell is not running in an interactive mode (isatty failed).\n");
         /* Allow the shell to continue for testing purposes */
-        currentDirectory = (char *)calloc(1024, sizeof(char));
+        currentDirectory = (char *)malloc(1024 * sizeof(char));
         if (currentDirectory == NULL) {
-            perror("calloc");
+            perror("malloc");
             exit(EXIT_FAILURE);
         }
+        memset(currentDirectory, 0, 1024 * sizeof(char));
     }
 }
 
