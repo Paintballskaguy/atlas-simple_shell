@@ -1,6 +1,9 @@
 #ifndef WAIT_FUNCTIONS_H
 #define WAIT_FUNCTIONS_H
 
+#include <stdio.h>
+#include <stdlib.h>
+#include <stddef.h>
 #include <sys/types.h>
 #include <sys/wait.h>
 
