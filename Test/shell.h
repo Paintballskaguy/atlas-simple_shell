@@ -8,9 +8,9 @@
 #include <sys/types.h>
 #include <signal.h>
 #include <fcntl.h>
-/*#include <termios.h>*/
-/*#include <errno.h>*/
-/*#include <sys/wait.h>*/  /*Linux directories. not windows.*/
+#include <termios.h>
+#include <errno.h>
+#include <sys/wait.h>
 
 #include "wait_functions.h"
 
@@ -28,22 +28,8 @@ extern int numTokens;
 extern int no_reprint_prmpt;
 extern char **environ;
 
-struct sigaction act_child;
-struct sigaction act_int;
-
-int no_reprint_prmpt;
-
-pid_t pid;
-
-/**
- * SIGNAL HANDLERS
- */
-/* signal handler for SIGCHLD */
-void signalHandler_child(int p);
-/* signal handler for SIGINT */
-void signalHandler_int(int p);
-
-int changeDirectory(char *args[]);
+extern struct sigaction act_child;
+extern struct sigaction act_int;
 
 /* Command struct */
 typedef struct Command {
@@ -56,19 +42,19 @@ typedef struct Command {
 } Command;
 
 /* Function prototypes */
-void init();
-void welcome_screen();
+void init(void);
+void welcome_screen(void);
 void signal_handler_child(int p);
 void signal_handler_int(int p);
-void shell_prompt();
-int change_directory(char* args[]);
-int manage_environ(char * args[], int option);
+void shell_prompt(void);
+int change_directory(char *args[]);
+int manage_environ(char *args[], int option);
 void launch_prog(Command *cmd);
 void file_io(Command *cmd, int option);
 int command_handler(Command *cmd);
 void tokenize(char *line, Command *cmd);
 void add_history(Command *cmd);
-void print_history();
+void print_history(void);
 void free_command(Command *cmd);
 void handle_sequence(Command *cmd);
 
