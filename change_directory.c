@@ -8,10 +8,12 @@
 
 int change_directory(char *args[])
 {
+	char *home = NULL;
+	int i;
+
     if (args[1] == NULL)
     {
-        char *home = NULL;
-        for (int i = 0; environ[i] != NULL; i++)
+        for (i = 0; environ[i] != NULL; i++)
         {
             if (strncmp(environ[i], "HOME=", 5) == 0)
             {
