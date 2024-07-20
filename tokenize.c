@@ -32,8 +32,11 @@ void tokenize(char *line, Command *cmd)
 		}
 		else
 		{
+			if (i < LIMIT - 1)
+			{
 			cmd->args[i] = token;
 			i++;
+			}
 		}
 		token = strtok(NULL, " \t\r\n\a");
 	}
