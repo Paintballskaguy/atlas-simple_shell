@@ -32,16 +32,19 @@ void init(void)
         act_child.sa_flags = 0;
         act_int.sa_flags = 0;
 
-        if (sigaction(SIGCHLD, &act_child, NULL) == -1) {
+        if (sigaction(SIGCHLD, &act_child, NULL) == -1) 
+	{
             perror("sigaction SIGCHLD");
             exit(EXIT_FAILURE);
         }
-        if (sigaction(SIGINT, &act_int, NULL) == -1) {
+        if (sigaction(SIGINT, &act_int, NULL) == -1) 
+	{
             perror("sigaction SIGINT");
             exit(EXIT_FAILURE);
         }
 
-        if (setpgid(GBSH_PID, GBSH_PID) < 0) {
+        if (setpgid(GBSH_PID, GBSH_PID) < 0) 
+	{
             perror("setpgid");
             exit(EXIT_FAILURE);
         }
@@ -54,17 +57,20 @@ void init(void)
             exit(EXIT_FAILURE);
         }
 
-        if (tcsetpgrp(STDIN_FILENO, GBSH_PGID) == -1) {
+        if (tcsetpgrp(STDIN_FILENO, GBSH_PGID) == -1) 
+	{
             perror("tcsetpgrp");
             exit(EXIT_FAILURE);
         }
-        if (tcgetattr(STDIN_FILENO, &GBSH_TMODES) == -1) {
+        if (tcgetattr(STDIN_FILENO, &GBSH_TMODES) == -1) 
+	{
             perror("tcgetattr");
             exit(EXIT_FAILURE);
         }
 
         currentDirectory = (char *)malloc(1024 * sizeof(char));
-        if (currentDirectory == NULL) {
+        if (currentDirectory == NULL) 
+	{
             perror("malloc");
             exit(EXIT_FAILURE);
         }
@@ -72,8 +78,6 @@ void init(void)
     }
     else
     {
-        fprintf(stderr, "Warning: shell is not running in an interactive mode (isatty failed).\n");
-        /* Allow the shell to continue for testing purposes */
         currentDirectory = (char *)malloc(1024 * sizeof(char));
         if (currentDirectory == NULL) {
             perror("malloc");
