@@ -1,5 +1,7 @@
 #include "shell.h"
 
+extern char **environ;
+
 /**
  * manage_environ - Manage environment variables
  * @args: Arguments passed to the command

@@ -1,5 +1,6 @@
 #include "shell.h"
 
+extern char **environ;
 /**
  * change_directory - Change the current working directory
  * @args: Command arguments

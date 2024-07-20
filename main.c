@@ -1,5 +1,7 @@
 #include "shell.h"
 
+extern char **environ; /*including the extern declar for environ*/
+
 /**
  * main - Entry point for the shell
  */
