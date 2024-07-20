@@ -14,7 +14,8 @@ int no_reprint_prmpt = 0;
 Command *historyHead = NULL;
 Command *historyTail = NULL;
 
-int main() {
+int main() 
+{
     char line[MAXLINE];
     Command *cmd;
     numTokens = 0;
@@ -22,7 +23,8 @@ int main() {
     init();
     welcome_screen();
 
-    while (1) {
+    while (1) 
+	{
         cmd = malloc(sizeof(Command));
         memset(cmd, 0, sizeof(Command));
 

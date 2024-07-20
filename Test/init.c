@@ -1,13 +1,15 @@
 #include "shell.h"
 
-void init() {
+void init() 
+{
     struct sigaction act_child;
     struct sigaction act_int;
 
     GBSH_PID = getpid();
     GBSH_IS_INTERACTIVE = isatty(STDIN_FILENO);
 
-    if (GBSH_IS_INTERACTIVE) {
+    if (GBSH_IS_INTERACTIVE) 
+	{
         while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp())) {
             kill(GBSH_PID, SIGTTIN);
         }
@@ -30,7 +32,9 @@ void init() {
         tcgetattr(STDIN_FILENO, &GBSH_TMODES);
 
         currentDirectory = (char*) calloc(1024, sizeof(char));
-    } else {
+		} 
+	else 
+	{
         printf("Could not make the shell interactive.\n");
         exit(EXIT_FAILURE);
     }
