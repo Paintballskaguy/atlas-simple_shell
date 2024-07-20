@@ -11,11 +11,20 @@
 #include <termios.h>
 #include <errno.h>
 #include <sys/wait.h>
-
 #include "wait_functions.h"
 
 #define LIMIT 256 /* Max number of tokens for a command */
 #define MAXLINE 1024 /* Max number of characters from user input */
+
+/* Command struct */
+typedef struct Command {
+    char *args[LIMIT];
+    char *inputFile;
+    char *outputFile;
+    int background;
+    struct Command *next;
+    struct Command *prev;
+} Command;
 
 /* Global variables */
 extern pid_t GBSH_PID;
@@ -35,16 +44,6 @@ extern Command *historyTail;
 /*signal handlers*/
 extern struct sigaction act_child;
 extern struct sigaction act_int;
-
-/* Command struct */
-typedef struct Command {
-    char *args[LIMIT];
-    char *inputFile;
-    char *outputFile;
-    int background;
-    struct Command *next;
-    struct Command *prev;
-} Command;
 
 /* Function prototypes */
 void init(void);
