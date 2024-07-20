@@ -1,4 +1,5 @@
 #include "shell.h"
+#include <termios.h> /* Include this for struct termios */
 
 /* Global variables */
 pid_t GBSH_PID;
@@ -14,36 +15,45 @@ int no_reprint_prmpt = 0;
 Command *historyHead = NULL;
 Command *historyTail = NULL;
 
-int main() 
+/**
+ * main - Entry point for the shell
+ *
+ * Return: 0 on success, otherwise an error code
+ */
+int main(void)
 {
-    char line[MAXLINE];
-    Command *cmd;
-    numTokens = 0;
+	char line[MAXLINE];
+	Command *cmd;
 
-    init();
-    welcome_screen();
+	numTokens = 0;
 
-    while (1) 
+	init();
+	welcome_screen();
+
+	while (1)
 	{
-        cmd = malloc(sizeof(Command));
-        memset(cmd, 0, sizeof(Command));
+		cmd = malloc(sizeof(Command));
+		memset(cmd, 0, sizeof(Command));
 
-        shell_prompt();
-        memset(line, '\0', MAXLINE);
-        fgets(line, MAXLINE, stdin);
-        line[strlen(line) - 1] = '\n';
-        tokenize(line, cmd);
+		shell_prompt();
+		memset(line, '\0', MAXLINE);
+		fgets(line, MAXLINE, stdin);
+		line[strlen(line) - 1] = '\n';
+		tokenize(line, cmd);
 
-        if (strcmp(cmd->args[0], "history") == 0) {
-            print_history();
-        } else {
-            add_history(cmd);
-            handle_sequence(cmd);
-        }
+		if (strcmp(cmd->args[0], "history") == 0)
+		{
+			print_history();
+		}
+		else
+		{
+			add_history(cmd);
+			handle_sequence(cmd);
+		}
 
-        free_command(cmd);
-    }
+		free_command(cmd);
+	}
 
-    free(currentDirectory);
-    return 0;
+	free(currentDirectory);
+	return (0);
 }

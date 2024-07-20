@@ -1,25 +1,42 @@
 #include "shell.h"
 
-void tokenize(char *line, Command *cmd) {
-    int i = 0;
-    numTokens = 0;
-    char *token = strtok(line, " \t\r\n\a");
+/**
+ * tokenize - Tokenize the input line into command and arguments
+ * @line: Input line to tokenize
+ * @cmd: Command structure to populate
+ */
 
-    while (token != NULL) {
-        if (strcmp(token, "<") == 0) {
-            token = strtok(NULL, " \t\r\n\a");
-            cmd->inputFile = token;
-        } else if (strcmp(token, ">") == 0) {
-            token = strtok(NULL, " \t\r\n\a");
-            cmd->outputFile = token;
-        } else if (strcmp(token, "&") == 0) {
-            cmd->background = 1;
-        } else {
-            cmd->args[i] = token;
-            i++;
-        }
-        token = strtok(NULL, " \t\r\n\a");
-    }
-    cmd->args[i] = NULL;
-    numTokens = i;
+void tokenize(char *line, Command *cmd)
+{
+	int i = 0;
+	char *token;
+
+	numTokens = 0;
+	token = strtok(line, " \t\r\n\a");
+
+	while (token != NULL)
+	{
+		if (strcmp(token, "<") == 0)
+		{
+			token = strtok(NULL, " \t\r\n\a");
+			cmd->inputFile = token;
+		}
+		else if (strcmp(token, ">") == 0)
+		{
+			token = strtok(NULL, " \t\r\n\a");
+			cmd->outputFile = token;
+		}
+		else if (strcmp(token, "&") == 0)
+		{
+			cmd->background = 1;
+		}
+		else
+		{
+			cmd->args[i] = token;
+			i++;
+		}
+		token = strtok(NULL, " \t\r\n\a");
+	}
+	cmd->args[i] = NULL;
+	numTokens = i;
 }
