@@ -26,13 +26,6 @@ extern char *currentDirectory;
 extern pid_t pid;
 extern int numTokens;
 extern int no_reprint_prmpt;
-
-static pid_t GBSH_PID;
-static pid_t GBSH_PGID;
-static int GBSH_IS_INTERACTIVE;
-static struct termios GBSH_TMODES;
-
-static char *currentDirectory;
 extern char **environ;
 
 struct sigaction act_child;
