@@ -1,7 +1,4 @@
 #include "shell.h"
-#include <signal.h> /* Include this for kill */
-#include <unistd.h> /* Include this for getpid */
-#include <stdio.h> /* Include this for printf */
 
 /**
  * signal_handler_child - Handle SIGCHLD signal

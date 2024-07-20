@@ -1,5 +1,4 @@
 #include "shell.h"
-#include <termios.h> /* Include this for struct termios */
 
 /* Global variables */
 pid_t GBSH_PID;
@@ -20,6 +19,7 @@ Command *historyTail = NULL;
  *
  * Return: 0 on success, otherwise an error code
  */
+
 int main(void)
 {
 	char line[MAXLINE];

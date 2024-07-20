@@ -1,8 +1,4 @@
 #include "shell.h"
-#include <unistd.h> /* Include this for fork, setpgid, getpgrp, etc. */
-#include <signal.h> /* Include this for sigaction, SIGCHLD, etc. */
-#include <termios.h> /* Include this for tcgetattr, tcsetattr, etc. */
-#include <stdlib.h> /* Include this for calloc */
 
 /**
  * init - Initialize the shell

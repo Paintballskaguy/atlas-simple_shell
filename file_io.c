@@ -1,6 +1,4 @@
 #include "shell.h"
-#include <unistd.h> /* Include this for fork, setenv, and other POSIX functions */
-#include <stdlib.h> /* Include this for setenv and other standard library functions */
 
 /**
  * file_io - Handle file input/output redirection

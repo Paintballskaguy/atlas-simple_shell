@@ -1,5 +1,4 @@
 #include "shell.h"
-#include <stdlib.h> /* Include this for setenv and unsetenv */
 
 /**
  * manage_environ - Manage environment variables
