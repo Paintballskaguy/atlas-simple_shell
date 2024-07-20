@@ -43,12 +43,3 @@ void tokenize(char *line, Command *cmd)
 	cmd->args[i] = NULL;
 	numTokens = i;
 }
-void tokenize(char *line, char **args) {
-    int i = 0;
-    char *token = strtok(line, " \t\r\n\a");
-    while (token != NULL) {
-        args[i++] = token;
-        token = strtok(NULL, " \t\r\n\a");
-    }
-    args[i] = NULL;
-}
