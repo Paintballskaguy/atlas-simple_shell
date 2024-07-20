@@ -28,6 +28,11 @@ extern int numTokens;
 extern int no_reprint_prmpt;
 extern char **environ;
 
+/* command history*/
+extern Command *historyHead;
+extern Command *historyTail;
+
+/*signal handlers*/
 extern struct sigaction act_child;
 extern struct sigaction act_int;
 
