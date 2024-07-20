@@ -1,9 +1,13 @@
 #include "shell.h"
+#include <unistd.h> /* Include this for fork, setpgid, getpgrp, etc. */
+#include <signal.h> /* Include this for sigaction, SIGCHLD, etc. */
+#include <termios.h> /* Include this for tcgetattr, tcsetattr, etc. */
+#include <stdlib.h> /* Include this for calloc */
+#include <stdio.h>
 
 /**
  * init - Initialize the shell
  */
-
 void init(void)
 {
 	struct sigaction act_child;
@@ -21,27 +25,50 @@ void init(void)
 
 		act_child.sa_handler = signal_handler_child;
 		act_int.sa_handler = signal_handler_int;
+		sigemptyset(&act_child.sa_mask);
+		sigemptyset(&act_int.sa_mask);
+		act_child.sa_flags = 0;
+		act_int.sa_flags = 0;
 
-		sigaction(SIGCHLD, &act_child, 0);
-		sigaction(SIGINT, &act_int, 0);
+		if (sigaction(SIGCHLD, &act_child, NULL) == -1) {
+			perror("sigaction");
+			exit(EXIT_FAILURE);
+		}
+		if (sigaction(SIGINT, &act_int, NULL) == -1) {
+			perror("sigaction");
+			exit(EXIT_FAILURE);
+		}
 
-		setpgid(GBSH_PID, GBSH_PID);
+		if (setpgid(GBSH_PID, GBSH_PID) < 0) {
+			perror("setpgid");
+			exit(EXIT_FAILURE);
+		}
 		GBSH_PGID = getpgrp();
 
 		if (GBSH_PID != GBSH_PGID)
 		{
-			printf("Error, the shell is not process group leader");
+			fprintf(stderr, "Error: the shell is not process group leader\n");
 			exit(EXIT_FAILURE);
 		}
 
-		tcsetpgrp(STDIN_FILENO, GBSH_PGID);
-		tcgetattr(STDIN_FILENO, &GBSH_TMODES);
+		if (tcsetpgrp(STDIN_FILENO, GBSH_PGID) == -1) {
+			perror("tcsetpgrp");
+			exit(EXIT_FAILURE);
+		}
+		if (tcgetattr(STDIN_FILENO, &GBSH_TMODES) == -1) {
+			perror("tcgetattr");
+			exit(EXIT_FAILURE);
+		}
 
 		currentDirectory = (char *)calloc(1024, sizeof(char));
+		if (currentDirectory == NULL) {
+			perror("calloc");
+			exit(EXIT_FAILURE);
+		}
 	}
 	else
 	{
-		printf("Could not make the shell interactive.\n");
+		fprintf(stderr, "Error: shell is not running in an interactive mode (isatty failed).\n");
 		exit(EXIT_FAILURE);
 	}
 }
