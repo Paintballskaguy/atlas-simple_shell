@@ -1,130 +1,50 @@
 file_io.c: In function 'file_io':
-file_io.c:6:16: error: implicit declaration of function 'fork' [-Werror=implicit-function-declaration]
-    6 |     if ((pid = fork()) == -1) {
-      |                ^~~~
-file_io.c:29:9: error: implicit declaration of function 'setenv'; did you mean 'getenv'? [-Werror=implicit-function-declaration]
-   29 |         setenv("parent", getcwd(currentDirectory, 1024), 1);
-      |         ^~~~~~
-      |         getenv
-file_io.c:33:13: error: implicit declaration of function 'kill' [-Werror=implicit-function-declaration]
-   33 |             kill(getpid(), SIGTERM);
+file_io.c:15:13: error: implicit declaration of function 'fork' [-Werror=implicit-function-declaration]
+   15 |  if ((pid = fork()) == -1)
       |             ^~~~
+file_io.c:45:3: error: implicit declaration of function 'setenv'; did you mean 'getenv'? [-Werror=implicit-function-declaration]
+   45 |   setenv("parent", getcwd(currentDirectory, 1024), 1);
+      |   ^~~~~~
+      |   getenv
+file_io.c:50:4: error: implicit declaration of function 'kill' [-Werror=implicit-function-declaration]
+   50 |    kill(getpid(), SIGTERM);
+      |    ^~~~
 cc1.exe: all warnings being treated as errors
-history.c: In function 'print_history':
-history.c:28:9: error: 'for' loop initial declarations are only allowed in C99 or C11 mode
-   28 |         for (int j = 0; temp->args[j] != NULL; j++) {
-      |         ^~~
-history.c:28:9: note: use option '-std=c99', '-std=gnu99', '-std=c11' or '-std=gnu11' to compile your code
-init.c: In function 'init':
-init.c:5:22: error: storage size of 'act_child' isn't known
-    5 |     struct sigaction act_child;
-      |                      ^~~~~~~~~
-init.c:6:22: error: storage size of 'act_int' isn't known
-    6 |     struct sigaction act_int;
-      |                      ^~~~~~~
-init.c:13:16: error: implicit declaration of function 'tcgetpgrp' [-Werror=implicit-function-declaration]
-   13 |         while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp())) {
-      |                ^~~~~~~~~
-init.c:13:56: error: implicit declaration of function 'getpgrp' [-Werror=implicit-function-declaration]
-   13 |         while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp())) {
-      |                                                        ^~~~~~~
-init.c:14:13: error: implicit declaration of function 'kill' [-Werror=implicit-function-declaration]
-   14 |             kill(GBSH_PID, SIGTTIN);
-      |             ^~~~
-init.c:14:28: error: 'SIGTTIN' undeclared (first use in this function)
-   14 |             kill(GBSH_PID, SIGTTIN);
-      |                            ^~~~~~~
-init.c:14:28: note: each undeclared identifier is reported only once for each function it appears in
-init.c:20:9: error: implicit declaration of function 'sigaction' [-Werror=implicit-function-declaration]
-   20 |         sigaction(SIGCHLD, &act_child, 0);
-      |         ^~~~~~~~~
-init.c:20:19: error: 'SIGCHLD' undeclared (first use in this function)
-   20 |         sigaction(SIGCHLD, &act_child, 0);
-      |                   ^~~~~~~
-init.c:23:9: error: implicit declaration of function 'setpgid'; did you mean 'getpid'? [-Werror=implicit-function-declaration]
-   23 |         setpgid(GBSH_PID, GBSH_PID);
-      |         ^~~~~~~
-      |         getpid
-init.c:31:9: error: implicit declaration of function 'tcsetpgrp' [-Werror=implicit-function-declaration]
-   31 |         tcsetpgrp(STDIN_FILENO, GBSH_PGID);
-      |         ^~~~~~~~~
-init.c:32:9: error: implicit declaration of function 'tcgetattr' [-Werror=implicit-function-declaration]
-   32 |         tcgetattr(STDIN_FILENO, &GBSH_TMODES);
-      |         ^~~~~~~~~
-init.c:6:22: error: unused variable 'act_int' [-Werror=unused-variable]
-    6 |     struct sigaction act_int;
-      |                      ^~~~~~~
-init.c:5:22: error: unused variable 'act_child' [-Werror=unused-variable]
-    5 |     struct sigaction act_child;
-      |                      ^~~~~~~~~
-cc1.exe: all warnings being treated as errors
+init.c:4:10: fatal error: termios.h: No such file or directory
+    4 | #include <termios.h> /* Include this for tcgetattr, tcsetattr, etc. */
+      |          ^~~~~~~~~~~
+compilation terminated.
 launch_prog.c: In function 'launch_prog':
-launch_prog.c:6:16: error: implicit declaration of function 'fork' [-Werror=implicit-function-declaration]
-    6 |     if ((pid = fork()) == -1) {
-      |                ^~~~
-launch_prog.c:13:9: error: implicit declaration of function 'setenv'; did you mean 'getenv'? [-Werror=implicit-function-declaration]
-   13 |         setenv("parent", getcwd(currentDirectory, 1024), 1);
-      |         ^~~~~~
-      |         getenv
-launch_prog.c:37:13: error: implicit declaration of function 'kill' [-Werror=implicit-function-declaration]
-   37 |             kill(getpid(), SIGTERM);
+launch_prog.c:17:13: error: implicit declaration of function 'fork' [-Werror=implicit-function-declaration]
+   17 |  if ((pid = fork()) == -1)
       |             ^~~~
-launch_prog.c:44:44: error: format '%d' expects argument of type 'int', but argument 2 has type 'pid_t' {aka 'long long int'} [-Werror=format=] 
-   44 |         printf("Process created with PID: %d\n", pid);
-      |                                           ~^     ~~~
-      |                                            |     |
-      |                                            int   pid_t {aka long long int}
-      |                                           %I64d
-launch_prog.c:44:44: error: format '%d' expects argument of type 'int', but argument 2 has type 'pid_t' {aka 'long long int'} [-Werror=format=] 
-   44 |         printf("Process created with PID: %d\n", pid);
-      |                                           ~^     ~~~
-      |                                            |     |
-      |                                            int   pid_t {aka long long int}
-      |                                           %I64d
+launch_prog.c:26:3: error: implicit declaration of function 'setenv'; did you mean 'getenv'? [-Werror=implicit-function-declaration]      
+   26 |   setenv("parent", getcwd(currentDirectory, 1024), 1);
+      |   ^~~~~~
+      |   getenv
+launch_prog.c:55:4: error: implicit declaration of function 'kill' [-Werror=implicit-function-declaration]
+   55 |    kill(getpid(), SIGTERM);
+      |    ^~~~
 cc1.exe: all warnings being treated as errors
-main.c:6:16: error: storage size of 'GBSH_TMODES' isn't known
-    6 | struct termios GBSH_TMODES;
-      |                ^~~~~~~~~~~
+main.c:2:10: fatal error: termios.h: No such file or directory
+    2 | #include <termios.h> /* Include this for struct termios */
+      |          ^~~~~~~~~~~
+compilation terminated.
 manage_environ.c: In function 'manage_environ':
-manage_environ.c:24:17: error: implicit declaration of function 'setenv'; did you mean 'getenv'? [-Werror=implicit-function-declaration]        
-   24 |                 setenv(args[1], "", 1);
-      |                 ^~~~~~
-      |                 getenv
-manage_environ.c:35:17: error: implicit declaration of function 'unsetenv' [-Werror=implicit-function-declaration]
-   35 |                 unsetenv(args[1]);
-      |                 ^~~~~~~~
+manage_environ.c:42:4: error: implicit declaration of function 'setenv'; did you mean 'getenv'? [-Werror=implicit-function-declaration]   
+   42 |    setenv(args[1], "", 1);
+      |    ^~~~~~
+      |    getenv
+manage_environ.c:57:4: error: implicit declaration of function 'unsetenv' [-Werror=implicit-function-declaration]
+   57 |    unsetenv(args[1]);
+      |    ^~~~~~~~
 cc1.exe: all warnings being treated as errors
 shell_prompt.c: In function 'shell_prompt':
-shell_prompt.c:5:5: error: implicit declaration of function 'gethostname' [-Werror=implicit-function-declaration]
-    5 |     gethostname(hostn, sizeof(hostn));
-      |     ^~~~~~~~~~~
+shell_prompt.c:12:2: error: implicit declaration of function 'gethostname' [-Werror=implicit-function-declaration]
+   12 |  gethostname(hostn, sizeof(hostn));
+      |  ^~~~~~~~~~~
 cc1.exe: all warnings being treated as errors
-signal_handlers.c: In function 'signal_handler_child':
-signal_handlers.c:3:31: error: unused parameter 'p' [-Werror=unused-parameter]
-    3 | void signal_handler_child(int p) {
-      |                           ~~~~^
 signal_handlers.c: In function 'signal_handler_int':
-signal_handlers.c:9:9: error: implicit declaration of function 'kill' [-Werror=implicit-function-declaration]
-    9 |     if (kill(pid, SIGTERM) == 0) {
-      |         ^~~~
-signal_handlers.c:10:28: error: format '%d' expects argument of type 'int', but argument 2 has type 'pid_t' {aka 'long long int'} [-Werror=format=]
-   10 |         printf("\nProcess %d received a SIGINT signal\n", pid);
-      |                           ~^                              ~~~
-      |                            |                              |
-      |                            int                            pid_t {aka long long int}
-      |                           %I64d
-signal_handlers.c:10:28: error: format '%d' expects argument of type 'int', but argument 2 has type 'pid_t' {aka 'long long int'} [-Werror=format=]
-   10 |         printf("\nProcess %d received a SIGINT signal\n", pid);
-      |                           ~^                              ~~~
-      |                            |                              |
-      |                            int                            pid_t {aka long long int}
-      |                           %I64d
-signal_handlers.c:8:29: error: unused parameter 'p' [-Werror=unused-parameter]
-    8 | void signal_handler_int(int p) {
-      |                         ~~~~^
-cc1.exe: all warnings being treated as errors
-tokenize.c: In function 'tokenize':
-tokenize.c:6:5: error: ISO C90 forbids mixed declarations and code [-Werror=declaration-after-statement]
-    6 |     char *token = strtok(line, " \t\r\n\a");
-      |     ^~~~
-cc1.exe: all warnings being treated as errors
+signal_handlers.c:25:6: error: implicit declaration of function 'kill' [-Werror=implicit-function-declaration]
+   25 |  if (kill(pid, SIGTERM) == 0)
+      |      ^~~~
