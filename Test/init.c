@@ -1,6 +1,9 @@
 #include "shell.h"
 
 void init() {
+    struct sigaction act_child;
+    struct sigaction act_int;
+
     GBSH_PID = getpid();
     GBSH_IS_INTERACTIVE = isatty(STDIN_FILENO);
 
@@ -8,9 +11,6 @@ void init() {
         while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp())) {
             kill(GBSH_PID, SIGTTIN);
         }
-
-        struct sigaction act_child;
-        struct sigaction act_int;
 
         act_child.sa_handler = signal_handler_child;
         act_int.sa_handler = signal_handler_int;
