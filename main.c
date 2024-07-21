@@ -56,7 +56,7 @@ int main(void)
                 exit(EXIT_FAILURE);
             }
         }
-
+		line[read - 1] = '\0';
         tokenize(line, cmd);
 
         if (cmd->args[0] == NULL) /* Empty command */
