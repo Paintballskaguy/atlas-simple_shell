@@ -5,19 +5,23 @@ extern char **environ;
 /**
  * main - Entry point for the shell
  */
+
 int main(void)
 {
     char *line = NULL;
     size_t len = 0;
     ssize_t read;
     Command *cmd;
-    numTokens = 0;
 
     init();
 
     if (GBSH_IS_INTERACTIVE)
     {
         welcome_screen();
+    }
+    else
+    {
+        printf("Warning: shell is not running in an interactive mode (isatty failed).\n");
     }
 
     while (1)
@@ -38,19 +42,20 @@ int main(void)
         read = getline(&line, &len, stdin);
         if (read == -1)
         {
-            if (errno == EINTR)
-			{
-				free(cmd);
-				continue;
-			} /* End of file (Ctrl+D) */
-            else if (read == -1) /* error or EOF */
-			{
+            if (errno == EINTR) /* Interrupted by signal */
+            {
+                free(cmd);
+                continue;
+            }
+            else if (read == -1) /* Error or EOF */
+            {
                 free(cmd);
                 free(line);
                 break;
             }
-            
-		line[read - 1] = '\0'; /* removes new line character*/
+        }
+
+        line[read - 1] = '\0';  /* Remove newline character */
         tokenize(line, cmd);
 
         if (cmd->args[0] == NULL) /* Empty command */
