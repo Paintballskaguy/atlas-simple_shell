@@ -70,10 +70,11 @@ int main(void)
         }
 
         free_command(cmd);
-    }
-
+    	}
+	}
     free(currentDirectory);
     free(line);
     return 0;
 }
+
 
