@@ -5,8 +5,8 @@ void init()
 	struct sigaction act_child;
         struct sigaction act_int;
 
-	GBSH_PID = getpid();
-    	GBSH_IS_INTERACTIVE = isatty(STDIN_FILENO);
+    GBSH_PID = getpid();
+    GBSH_IS_INTERACTIVE = isatty(STDIN_FILENO);
 
     if (GBSH_IS_INTERACTIVE)
     {
@@ -43,3 +43,4 @@ void init()
         printf("Warning: shell is not running in an interactive mode (isatty failed).\n");
     }
 }
+

@@ -5,6 +5,7 @@
  * @cmd: Command to execute
  * @option: Option for file redirection (0: output, 1: input/output)
  */
+
 void file_io(Command *cmd, int option)
 {
 	int err = -1;
