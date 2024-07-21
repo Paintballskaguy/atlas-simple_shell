@@ -1,20 +1,24 @@
 #include "shell.h"
 
-extern char **environ; /*including the extern declar for environ*/
+extern char **environ;
 
 /**
  * main - Entry point for the shell
  */
-
 int main(void)
 {
     char *line = NULL;
     size_t len = 0;
+    ssize_t read;
     Command *cmd;
     numTokens = 0;
 
     init();
-    welcome_screen();
+
+    if (GBSH_IS_INTERACTIVE)
+    {
+        welcome_screen();
+    }
 
     while (1)
     {
@@ -26,17 +30,40 @@ int main(void)
         }
         memset(cmd, 0, sizeof(Command));
 
-        shell_prompt();
-        if (getline(&line, &len, stdin) == -1)
+        if (GBSH_IS_INTERACTIVE)
         {
-            if (errno == EINTR)
-                continue; /* Interrupted by signal, continue reading */
-            free(cmd);
-            free(line);
-            exit(EXIT_SUCCESS);
+            shell_prompt();
+        }
+
+        read = getline(&line, &len, stdin);
+        if (read == -1)
+        {
+            if (feof(stdin)) /* End of file (Ctrl+D) */
+            {
+                free(cmd);
+                free(line);
+                break;
+            }
+            else if (errno == EINTR) /* Interrupted by signal */
+            {
+                continue;
+            }
+            else
+            {
+                perror("getline");
+                free(cmd);
+                free(line);
+                exit(EXIT_FAILURE);
+            }
         }
 
         tokenize(line, cmd);
+
+        if (cmd->args[0] == NULL) /* Empty command */
+        {
+            free_command(cmd);
+            continue;
+        }
 
         if (strcmp(cmd->args[0], "history") == 0)
         {
