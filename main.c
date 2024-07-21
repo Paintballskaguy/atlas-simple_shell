@@ -38,25 +38,19 @@ int main(void)
         read = getline(&line, &len, stdin);
         if (read == -1)
         {
-            if (feof(stdin)) /* End of file (Ctrl+D) */
-            {
+            if (errno == EINTR)
+			{
+				free(cmd);
+				continue;
+			} /* End of file (Ctrl+D) */
+            else if (read == -1) /* error or EOF */
+			{
                 free(cmd);
                 free(line);
                 break;
             }
-            else if (errno == EINTR) /* Interrupted by signal */
-            {
-                continue;
-            }
-            else
-            {
-                perror("getline");
-                free(cmd);
-                free(line);
-                exit(EXIT_FAILURE);
-            }
-        }
-		line[read - 1] = '\0';
+            
+		line[read - 1] = '\0'; /* removes new line character*/
         tokenize(line, cmd);
 
         if (cmd->args[0] == NULL) /* Empty command */
