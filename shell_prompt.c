@@ -11,6 +11,11 @@ char *get_custom_env(char *var)
 	extern char **environ; /* Access to environment variables */
 	int i;
 
+	if (environ == NULL) /* NULL checker */
+    {
+        return NULL;
+    }
+
 	/* Iterate through the environment variables */
 	for (i = 0; environ[i] != NULL; i++)
 	{
