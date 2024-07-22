@@ -62,5 +62,6 @@ void print_history(void);
 void free_command(Command *cmd);
 void handle_sequence(Command *cmd);
 char *get_custom_env(const char *name);
+int command_handler(Command *cmd);
 
 #endif /* SHELL_H */

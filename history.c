@@ -58,16 +58,6 @@ void print_history(void)
 }
 
 /**
- * free_command - Free a command structure
- * @cmd: Command structure to free
- */
-void free_command(Command *cmd)
-{
-	/* Clean up dynamically allocated Command struct */
-	free(cmd);
-}
-
-/**
  * handle_sequence - Handle the sequence of commands
  * @cmd: Command to execute
  */
