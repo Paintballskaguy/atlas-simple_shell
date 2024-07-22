@@ -1,6 +1,7 @@
 #include "shell.h"
 
-void welcome_screen() {
+void welcome_screen() 
+{
     printf("\n\t============================================\n");
     printf("\t               Turtle Shell\n");
     printf("\t--------------------------------------------\n");

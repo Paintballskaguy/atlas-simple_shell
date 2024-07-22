@@ -5,7 +5,7 @@ pid_t GBSH_PID;
 pid_t GBSH_PGID;
 struct termios GBSH_TMODES;
 int GBSH_IS_INTERACTIVE;
-char *currentDirectory = NULL;
+extern char *currentDirectory = NULL;
 pid_t pid;
 int numTokens;
 int no_reprint_prmpt;
