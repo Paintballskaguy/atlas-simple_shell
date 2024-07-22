@@ -14,7 +14,12 @@ void init()
             kill(GBSH_PID, SIGTTIN);
 
         act_child.sa_handler = signal_handler_child;
+        sigemptyset(&act_child.sa_mask);
+        act_child.sa_flags = 0;
+
         act_int.sa_handler = signal_handler_int;
+        sigemptyset(&act_int.sa_mask);
+        act_int.sa_flags = 0;
 
         sigaction(SIGCHLD, &act_child, 0);
         sigaction(SIGINT, &act_int, 0);
