@@ -2,8 +2,8 @@
 
 void init()
 {
-	struct sigaction act_child;
-        struct sigaction act_int;
+    struct sigaction act_child;
+    struct sigaction act_int;
 
     GBSH_PID = getpid();
     GBSH_IS_INTERACTIVE = isatty(STDIN_FILENO);
@@ -30,17 +30,23 @@ void init()
 
         tcsetpgrp(STDIN_FILENO, GBSH_PGID);
         tcgetattr(STDIN_FILENO, &GBSH_TMODES);
-
-        currentDirectory = (char *)malloc(1024 * sizeof(char));
-        if (currentDirectory == NULL)
-        {
-            perror("malloc");
-            exit(EXIT_FAILURE);
-        }
     }
     else
     {
         printf("Warning: shell is not running in an interactive mode (isatty failed).\n");
     }
-}
 
+    currentDirectory = (char *)malloc(1024 * sizeof(char));
+    if (currentDirectory == NULL)
+    {
+        perror("malloc");
+        exit(EXIT_FAILURE);
+    }
+
+    if (getcwd(currentDirectory, 1024) == NULL)
+    {
+        perror("getcwd");
+        free(currentDirectory);
+        exit(EXIT_FAILURE);
+    }
+}
