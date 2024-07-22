@@ -39,7 +39,6 @@ int command_handler(Command *cmd)
 
     if (strcmp(cmd->args[0], "exit") == 0)
     {
-        free_command(cmd);
         exit(0);  /* Exit the shell */
     }
 

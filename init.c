@@ -31,10 +31,6 @@ void init()
         tcsetpgrp(STDIN_FILENO, GBSH_PGID);
         tcgetattr(STDIN_FILENO, &GBSH_TMODES);
     }
-    else
-    {
-        printf("Warning: shell is not running in an interactive mode (isatty failed).\n");
-    }
 
     currentDirectory = (char *)malloc(1024 * sizeof(char));
     if (currentDirectory == NULL)
