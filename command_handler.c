@@ -76,6 +76,6 @@ int command_handler(Command *cmd)
 		/* Parent process */
 		int status;
 		waitpid(pid, &status, 0); /* Wait for the child process to finish */
-		return 0;
 	}
+	return (0);
 }
