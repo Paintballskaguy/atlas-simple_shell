@@ -50,5 +50,14 @@ void add_history(Command *cmd);
 void print_history();
 void free_command(Command *cmd);
 void handle_sequence(Command *cmd);
+void waitpid_wrapper(pid_t pid, int *status, int options);
+{
+    waitpid(pid, status, options);
+}
+void wait_child_processes();
+{
+    while (waitpid(-1, NULL, WNOHANG) > 0);
+}
+
 
 #endif /* SHELL_H */
