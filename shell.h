@@ -23,6 +23,7 @@ extern struct termios GBSH_TMODES;
 extern int GBSH_IS_INTERACTIVE;
 extern char *currentDirectory;
 extern int numTokens;
+extern int no_reprint_prmpt;
 
 /* Command struct */
 typedef struct Command {
@@ -53,6 +54,5 @@ void handle_sequence(Command *cmd);
 void waitpid_wrapper(pid_t pid, int *status, int options);
 void wait_child_processes();
 
-
-
 #endif /* SHELL_H */
+
