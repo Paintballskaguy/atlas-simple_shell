@@ -39,7 +39,6 @@ int command_handler(Command *cmd)
 	/* Check if the command structure or the first argument is NULL */
 	if (cmd == NULL || cmd->args[0] == NULL)
 	{
-		free_command(cmd);
 		return -1; /* No command to handle */
 	}
 
@@ -58,7 +57,6 @@ int command_handler(Command *cmd)
 
 	/* Fork a new process */
 	pid = fork();
-	free_command(cmd);
 	if (pid == -1)
 	{
 		/* Fork failed */
@@ -67,10 +65,11 @@ int command_handler(Command *cmd)
 	}
 	else if (pid == 0)
 	{
-		/* Child process */
-		execvp(cmd->args[0], cmd->args); /* Execute the command */
-		perror("execvp");				 /* If execvp fails, print an error message */
-		exit(EXIT_FAILURE);				 /* Exit with failure */
+		if (execvp(cmd->args[0], cmd->args) == -1)
+        {
+            perror("execvp");
+            exit(EXIT_FAILURE);
+        }
 	}
 	else
 	{
