@@ -23,7 +23,7 @@ void free_command(Command *cmd)
 int command_handler(Command *cmd)
 {
 
-	pid_t *pid;
+	pid_t pid;
     if (cmd == NULL || cmd->args[0] == NULL)
     {
         return -1;  /* No command to handle*/
