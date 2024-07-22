@@ -47,7 +47,7 @@ int main(void)
                 free(cmd);
                 continue;
             }
-            else /* Error or EOF */
+            else if (read == -1) /* Error or EOF */
             {
                 free(cmd);
                 free(line);
