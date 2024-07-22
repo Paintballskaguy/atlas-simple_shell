@@ -1,5 +1,9 @@
 #include "shell.h"
 
+/**
+ * free_command - Frees the memory allocated for a Command structure
+ * @cmd: The command structure to free
+ */
 void free_command(Command *cmd)
 {
     int i = 0;
@@ -18,20 +22,25 @@ void free_command(Command *cmd)
     }
 }
 
-#include "shell.h"
-
+/**
+ * command_handler - Handles the execution of a command
+ * @cmd: The command structure containing the command and its arguments
+ *
+ * Return: 0 on success, -1 on failure
+ */
 int command_handler(Command *cmd)
 {
+    pid_t pid;
 
-	pid_t pid;
     if (cmd == NULL || cmd->args[0] == NULL)
     {
-        return -1;  /* No command to handle*/
+        return -1;  /* No command to handle */
     }
 
     if (strcmp(cmd->args[0], "exit") == 0)
     {
-        exit(0);  /* Exit the shell*/
+        free_command(cmd);
+        exit(0);  /* Exit the shell */
     }
 
     if (strcmp(cmd->args[0], "cd") == 0)
@@ -48,14 +57,15 @@ int command_handler(Command *cmd)
     }
     else if (pid == 0)
     {
-        /*Child process*/
+        /* Child process */
         execvp(cmd->args[0], cmd->args);
         perror("execvp");
+        free_command(cmd);
         exit(EXIT_FAILURE);
     }
     else
     {
-        /*Parent procces, hopefully*/
+        /* Parent process */
         int status;
         waitpid(pid, &status, 0);
         return 0;
