@@ -6,15 +6,23 @@
 #include <unistd.h>
 #include <string.h>
 #include <sys/types.h>
+#include <sys/wait.h>
 #include <signal.h>
 #include <fcntl.h>
-#include <termios.h>
 #include <errno.h>
-#include <sys/wait.h>
-#include "wait_functions.h"
+#include <sys/ioctl.h>
+#include <termios.h>
 
 #define LIMIT 256 /* Max number of tokens for a command */
 #define MAXLINE 1024 /* Max number of characters from user input */
+
+/* Global variables */
+extern pid_t GBSH_PID;
+extern pid_t GBSH_PGID;
+extern struct termios GBSH_TMODES;
+extern int GBSH_IS_INTERACTIVE;
+extern char *currentDirectory;
+extern int numTokens;
 
 /* Command struct */
 typedef struct Command {
@@ -26,42 +34,21 @@ typedef struct Command {
     struct Command *prev;
 } Command;
 
-/* Global variables */
-extern pid_t GBSH_PID;
-extern pid_t GBSH_PGID;
-extern struct termios GBSH_TMODES;
-extern int GBSH_IS_INTERACTIVE;
-extern char *currentDirectory;
-extern pid_t pid;
-extern int numTokens;
-extern int no_reprint_prmpt;
-extern char **environ;
-
-/* command history*/
-extern Command *historyHead;
-extern Command *historyTail;
-
-/*signal handlers*/
-extern struct sigaction act_child;
-extern struct sigaction act_int;
-
 /* Function prototypes */
-void init(void);
-void welcome_screen(void);
+void init();
+void welcome_screen();
 void signal_handler_child(int p);
 void signal_handler_int(int p);
-void shell_prompt(void);
-int change_directory(char *args[]);
-int manage_environ(char *args[], int option);
+void shell_prompt();
+int change_directory(char* args[]);
+int manage_environ(char * args[], int option);
 void launch_prog(Command *cmd);
 void file_io(Command *cmd, int option);
 int command_handler(Command *cmd);
 void tokenize(char *line, Command *cmd);
 void add_history(Command *cmd);
-void print_history(void);
+void print_history();
 void free_command(Command *cmd);
 void handle_sequence(Command *cmd);
-char *get_custom_env(const char *name);
-int command_handler(Command *cmd);
 
 #endif /* SHELL_H */
