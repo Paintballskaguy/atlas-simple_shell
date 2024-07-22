@@ -59,7 +59,6 @@ int command_handler(Command *cmd)
         /* Child process */
         execvp(cmd->args[0], cmd->args);
         perror("execvp");
-        free_command(cmd);
         exit(EXIT_FAILURE);
     }
     else
