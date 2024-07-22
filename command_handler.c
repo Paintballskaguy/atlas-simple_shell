@@ -39,6 +39,7 @@ int command_handler(Command *cmd)
 	/* Check if the command structure or the first argument is NULL */
 	if (cmd == NULL || cmd->args[0] == NULL)
 	{
+		free_command(cmd);
 		return -1; /* No command to handle */
 	}
 
@@ -57,6 +58,7 @@ int command_handler(Command *cmd)
 
 	/* Fork a new process */
 	pid = fork();
+	free_command(cmd);
 	if (pid == -1)
 	{
 		/* Fork failed */
