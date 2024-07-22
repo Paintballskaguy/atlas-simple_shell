@@ -16,15 +16,6 @@
 #define LIMIT 256 /* Max number of tokens for a command */
 #define MAXLINE 1024 /* Max number of characters from user input */
 
-void waitpid_wrapper(pid_t pid, int *status, int options);
-{
-    waitpid(pid, status, options);
-}
-void wait_child_processes();
-{
-    while (waitpid(-1, NULL, WNOHANG) > 0);
-}
-
 /* Global variables */
 extern pid_t GBSH_PID;
 extern pid_t GBSH_PGID;
