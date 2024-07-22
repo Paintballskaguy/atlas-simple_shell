@@ -1,45 +1,26 @@
 #include "shell.h"
 
 /**
- * tokenize - Tokenize the input line into command and arguments
- * @line: Input line to tokenize
- * @cmd: Command structure to populate
+ * tokenize - Tokenizes a line into commands and arguments
+ * @line: The line to tokenize
+ * @cmd: The Command struct to fill
  */
-
 void tokenize(char *line, Command *cmd)
 {
-	int i = 0;
-	char *token;
+    int position = 0;
+    char *token;
 
-	numTokens = 0;
-	token = strtok(line, " \t\r\n\a");
-
-	while (token != NULL)
-	{
-		if (strcmp(token, "<") == 0)
-		{
-			token = strtok(NULL, " \t\r\n\a");
-			cmd->inputFile = token;
-		}
-		else if (strcmp(token, ">") == 0)
-		{
-			token = strtok(NULL, " \t\r\n\a");
-			cmd->outputFile = token;
-		}
-		else if (strcmp(token, "&") == 0)
-		{
-			cmd->background = 1;
-		}
-		else
-		{
-			if (i < LIMIT - 1)
-			{
-			cmd->args[i] = token;
-			i++;
-			}
-		}
-		token = strtok(NULL, " \t\r\n\a");
-	}
-	cmd->args[i] = NULL;
-	numTokens = i;
+    token = strtok(line, " \t\r\n\a");
+    while (token != NULL)
+    {
+        cmd->args[position] = strdup(token);
+        if (cmd->args[position] == NULL)
+        {
+            perror("strdup");
+            exit(EXIT_FAILURE);
+        }
+        position++;
+        token = strtok(NULL, " \t\r\n\a");
+    }
+    cmd->args[position] = NULL;
 }
