@@ -1,69 +1,90 @@
 #include "shell.h"
-#include <stdio.h>
-#include <string.h>
 
-extern char **environ;
+extern char **environ; /* Environment variables */
 
 /**
- * manage_environ - Manage environment variables
- * @args: Command arguments
- * @option: Option to set or unset environment variables
+ * main - Entry point for the shell
  * Return: 0 on success, -1 on failure
  */
-
-int manage_environ(char *args[], int option)
+int main(void)
 {
-    char **env_aux;
-    int i;
+    char *line = NULL; /* Line read from input */
+    size_t len = 0; /* Length of the line buffer */
+    ssize_t read; /* Number of characters read */
+    Command *cmd; /* Command structure */
 
-    switch (option) {
-        case 0:
-            for (env_aux = environ; *env_aux != 0; env_aux++)
-            {
-                printf("%s\n", *env_aux);
-            }
-            break;
-        case 1:
-            if ((args[1] == NULL) && args[2] == NULL)
-            {
-                printf("%s", "Not enough input arguments\n");
-                return -1;
-            }
+    init(); /* Initialize shell settings and environment */
 
-            for (i = 0; environ[i] != NULL; i++)
-            {
-                if (strncmp(environ[i], args[1], strlen(args[1])) == 0 && environ[i][strlen(args[1])] == '=')
-                {
-                    printf("%s", "The variable has been overwritten\n");
-                    break;
-                }
-            }
-
-            if (args[2] == NULL)
-            {
-                setenv(args[1], "", 1);
-            }
-            else
-            {
-                setenv(args[1], args[2], 1);
-            }
-            break;
-        case 2:
-            if (args[1] == NULL)
-            {
-                printf("%s", "Not enough input arguments\n");
-                return -1;
-            }
-            if (unsetenv(args[1]) == 0)
-            {
-                printf("%s", "The variable has been erased\n");
-            }
-            else
-            {
-                printf("%s", "The variable does not exist\n");
-            }
-            break;
+    /* Check if the shell is in interactive mode */
+    if (GBSH_IS_INTERACTIVE)
+    {
+        welcome_screen(); /* Display welcome screen if shell is interactive */
     }
-    return 0;
-}
+    else
+    {
+        printf("Warning: shell is not running in an interactive mode (isatty failed).\n");
+    }
 
+    /* Main loop to read and process commands */
+    while (1)
+    {
+        /* Allocate memory for a command structure */
+        cmd = malloc(sizeof(Command));
+        if (cmd == NULL)
+        {
+            perror("malloc"); /* Print error message if memory allocation fails */
+            exit(EXIT_FAILURE); /* Exit with failure */
+        }
+        memset(cmd, 0, sizeof(Command)); /* Initialize the command structure to zero */
+
+        /* Display the shell prompt if in interactive mode */
+        if (GBSH_IS_INTERACTIVE)
+        {
+            shell_prompt();
+        }
+
+        /* Read input from the user */
+        read = getline(&line, &len, stdin);
+        if (read == -1)
+        {
+            if (errno == EINTR) /* If interrupted by a signal */
+            {
+                free(cmd); /* Free the command structure */
+                continue; /* Continue the loop */
+            }
+            else if (read == -1) /* If error or EOF */
+            {
+                free(cmd); /* Free the command structure */
+                free(line); /* Free the line buffer */
+                break; /* Exit the loop */
+            }
+        }
+
+        line[read - 1] = '\0';  /* Remove newline character from the input line */
+        tokenize(line, cmd); /* Tokenize the input line into the command structure */
+
+        /* If the command is empty, free the command structure and continue */
+        if (cmd->args[0] == NULL)
+        {
+            free_command(cmd);
+            continue;
+        }
+
+        /* Check if the command is "history" */
+        if (strcmp(cmd->args[0], "history") == 0)
+        {
+            print_history(); /* Print command history if "history" command is entered */
+        }
+        else
+        {
+            add_history(cmd); /* Add the command to the history */
+            handle_sequence(cmd); /* Handle the command sequence */
+        }
+
+        free_command(cmd); /* Free the command structure */
+    }
+
+    free(currentDirectory); /* Free the current directory string */
+    free(line); /* Free the line buffer */
+    return 0; /* Return success */
+}

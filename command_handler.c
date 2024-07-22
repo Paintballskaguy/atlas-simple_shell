@@ -6,20 +6,24 @@
  */
 void free_command(Command *cmd)
 {
-    int i = 0;
+	int i = 0;
 
-    if (cmd)
-    {
-        while (cmd->args[i])
-        {
-            free(cmd->args[i]);
-            i++;
-        }
+	if (cmd) /* Check if the command structure is not NULL */
+	{
+		/* Free each argument string in the command */
+		while (cmd->args[i])
+		{
+			free(cmd->args[i]);
+			i++;
+		}
 
-        free(cmd->inputFile);
-        free(cmd->outputFile);
-        free(cmd);
-    }
+		/* Free the input file string if it exists */
+		free(cmd->inputFile);
+		/* Free the output file string if it exists */
+		free(cmd->outputFile);
+		/* Free the command structure itself */
+		free(cmd);
+	}
 }
 
 /**
@@ -30,42 +34,47 @@ void free_command(Command *cmd)
  */
 int command_handler(Command *cmd)
 {
-    pid_t pid;
+	pid_t pid; /* Process ID for fork */
 
-    if (cmd == NULL || cmd->args[0] == NULL)
-    {
-        return -1;  /* No command to handle */
-    }
+	/* Check if the command structure or the first argument is NULL */
+	if (cmd == NULL || cmd->args[0] == NULL)
+	{
+		return -1; /* No command to handle */
+	}
 
-    if (strcmp(cmd->args[0], "exit") == 0)
-    {
-        exit(0);  /* Exit the shell */
-    }
+	/* Check if the command is "exit" */
+	if (strcmp(cmd->args[0], "exit") == 0)
+	{
+		exit(0); /* Exit the shell */
+	}
 
-    if (strcmp(cmd->args[0], "cd") == 0)
-    {
-        change_directory(cmd->args);
-        return 0;
-    }
+	/* Check if the command is "cd" */
+	if (strcmp(cmd->args[0], "cd") == 0)
+	{
+		change_directory(cmd->args); /* Change directory */
+		return 0;
+	}
 
-    pid = fork();
-    if (pid == -1)
-    {
-        perror("fork");
-        return -1;
-    }
-    else if (pid == 0)
-    {
-        /* Child process */
-        execvp(cmd->args[0], cmd->args);
-        perror("execvp");
-        exit(EXIT_FAILURE);
-    }
-    else
-    {
-        /* Parent process */
-        int status;
-        waitpid(pid, &status, 0);
-        return 0;
-    }
+	/* Fork a new process */
+	pid = fork();
+	if (pid == -1)
+	{
+		/* Fork failed */
+		perror("fork");
+		return -1;
+	}
+	else if (pid == 0)
+	{
+		/* Child process */
+		execvp(cmd->args[0], cmd->args); /* Execute the command */
+		perror("execvp");				 /* If execvp fails, print an error message */
+		exit(EXIT_FAILURE);				 /* Exit with failure */
+	}
+	else
+	{
+		/* Parent process */
+		int status;
+		waitpid(pid, &status, 0); /* Wait for the child process to finish */
+		return 0;
+	}
 }
