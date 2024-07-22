@@ -19,6 +19,6 @@ void wait_child_processes(void)
 {
     while (waitpid(-1, NULL, WNOHANG) > 0)
     {
-        /* No operation; just wait for child processes to terminate */
+       ; /* No operation; just wait for child processes to terminate */
     }
 }
