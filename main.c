@@ -13,13 +13,10 @@ int main(void)
         status = getline(&line, &n, stdin);
         if (status == -1)
         {
-            if (line) /* If line is not NULL, it's an EOF condition */
-            {
-                free(line);
-                break;
-            }
-            perror("getline failed");
-            continue;
+            /* Handle EOF (Ctrl+D) */
+            printf("\n");
+            free(line);
+            exit(EXIT_SUCCESS);
         }
 
         /* Remove newline character from the input */
