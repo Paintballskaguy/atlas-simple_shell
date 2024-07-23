@@ -12,6 +12,7 @@
 void prompt(void);
 void execute(char **argv);
 char *trim_whitespace(char *str);
+char **split_line(char *line);
 
 #endif /* SHELL_H */
 

@@ -38,10 +38,11 @@ int main(void)
 			break;
 		}
 
-		argv[0] = line;
-		argv[1] = NULL;
+		/* Split the line into arguments */
+        argv = split_line(line);
 
 		execute(argv);
+		free(argv);
 	}
 
 	return (0);
