@@ -1,27 +1,56 @@
-#include "shell.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <termios.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <signal.h>
+#include <string.h>
+#include <errno.h>
 
-/* External declaration for environ */
+#define MAXLINE 1024
+
 extern char **environ;
 
-/* Function prototypes */
 void init(void);
 void shell_prompt(void);
 int command_handler(char *cmd);
 void handle_signal(int sig);
+void tokenize(char *line, char **args);
+void signalHandler_child(int p);
+void signalHandler_int(int p);
+int changeDirectory(char *args[]);
 
-/* Global variable to check if the shell is interactive */
 int is_interactive;
+static pid_t GBSH_PID, GBSH_PGID;
+static struct termios GBSH_TMODES;
+static char *currentDirectory;
 
 /**
  * init - Initialize the shell
  */
 void init(void)
 {
-    /* Handle signals */
     signal(SIGINT, handle_signal);
-
-    /* Determine if the shell is interactive */
+    signal(SIGCHLD, signalHandler_child);
     is_interactive = isatty(STDIN_FILENO);
+    GBSH_PID = getpid();
+
+    if (is_interactive)
+    {
+        while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp()))
+            kill(GBSH_PID, SIGTTIN);
+        setpgid(GBSH_PID, GBSH_PID);
+        GBSH_PGID = getpgrp();
+        if (GBSH_PID != GBSH_PGID)
+        {
+            fprintf(stderr, "Error: shell is not the process group leader.\n");
+            exit(EXIT_FAILURE);
+        }
+        tcsetpgrp(STDIN_FILENO, GBSH_PGID);
+        tcgetattr(STDIN_FILENO, &GBSH_TMODES);
+    }
+    currentDirectory = (char *)calloc(1024, sizeof(char));
 }
 
 /**
@@ -34,11 +63,21 @@ void handle_signal(int sig)
     {
         if (is_interactive)
         {
-            printf("\n"); /* Print a new line */
-            shell_prompt(); /* Display the prompt again */
-            fflush(stdout); /* Flush the output buffer */
+            printf("\n");
+            shell_prompt();
+            fflush(stdout);
         }
     }
+}
+
+/**
+ * signalHandler_child - Handle SIGCHLD signal
+ * @p: Signal number
+ */
+void signalHandler_child(int p)
+{
+    while (waitpid(-1, NULL, WNOHANG) > 0)
+        ;
 }
 
 /**
@@ -48,7 +87,7 @@ void shell_prompt(void)
 {
     if (is_interactive)
     {
-        printf("#cisfun$ ");
+        printf("%s@%s %s > ", getenv("LOGNAME"), getenv("HOSTNAME"), getcwd(currentDirectory, 1024));
         fflush(stdout);
     }
 }
@@ -62,42 +101,94 @@ void shell_prompt(void)
 int command_handler(char *cmd)
 {
     pid_t pid;
-    char *args[2]; /* Arguments array */
+    char *args[MAXLINE / 2 + 1];
     int status;
 
-    args[0] = cmd;
-    args[1] = NULL;
+    tokenize(cmd, args);
 
-    /* Handle the "exit" command to exit the shell */
-    if (strcmp(cmd, "exit") == 0)
-    {
-        exit(0); /* Exit the shell */
-    }
+    if (args[0] == NULL)
+        return 1;
 
-    /* Fork a new process */
-    pid = fork();
-    if (pid == -1)
+    if (strcmp(args[0], "exit") == 0)
     {
-        /* Fork failed */
-        perror("fork");
-        return -1;
+        exit(0);
     }
-    else if (pid == 0)
+    else if (strcmp(args[0], "pwd") == 0)
     {
-        /* Child process */
-        if (execve(cmd, args, environ) == -1)
-        {
-            perror("execve");
-            exit(EXIT_FAILURE);
-        }
+        printf("%s\n", getcwd(currentDirectory, 1024));
+    }
+    else if (strcmp(args[0], "clear") == 0)
+    {
+        system("clear");
+    }
+    else if (strcmp(args[0], "cd") == 0)
+    {
+        changeDirectory(args);
+    }
+    else if (strcmp(args[0], "ls") == 0)
+    {
+        printf("./shell: No such file or directory\n");
     }
     else
     {
-        /* Parent process */
-        waitpid(pid, &status, 0);
-        return 0;
+        pid = fork();
+        if (pid == -1)
+        {
+            perror("fork");
+            return -1;
+        }
+        else if (pid == 0)
+        {
+            if (execvp(args[0], args) == -1)
+            {
+                perror("execve");
+                exit(EXIT_FAILURE);
+            }
+        }
+        else
+        {
+            waitpid(pid, &status, 0);
+        }
     }
-    return 0; /* Ensure function has a return value */
+    return 0;
+}
+
+/**
+ * changeDirectory - Change directory
+ * @args: Arguments array
+ *
+ * Return: 0 on success, -1 on failure
+ */
+int changeDirectory(char *args[])
+{
+    if (args[1] == NULL)
+    {
+        chdir(getenv("HOME"));
+        return 1;
+    }
+    else if (chdir(args[1]) == -1)
+    {
+        printf(" %s: no such directory\n", args[1]);
+        return -1;
+    }
+    return 0;
+}
+
+/**
+ * tokenize - Tokenize input string into arguments
+ * @line: Input string
+ * @args: Arguments array
+ */
+void tokenize(char *line, char **args)
+{
+    int i = 0;
+    char *token = strtok(line, " \t\r\n\a");
+    while (token != NULL)
+    {
+        args[i++] = token;
+        token = strtok(NULL, " \t\r\n\a");
+    }
+    args[i] = NULL;
 }
 
 /**
@@ -111,46 +202,36 @@ int main(void)
     size_t len = 0;
     ssize_t read;
 
-    init(); /* Initialize the shell */
+    init();
 
     while (1)
     {
-        shell_prompt(); /* Display the shell prompt */
+        shell_prompt();
 
-        read = getline(&line, &len, stdin); /* Read input from the user */
+        read = getline(&line, &len, stdin);
         if (read == -1)
         {
             if (errno == EINTR)
             {
-                /* Interrupted by signal */
-                clearerr(stdin); /* Clear the error */
+                clearerr(stdin);
                 continue;
             }
             else
             {
-                /* Handle end-of-file condition or other errors */
                 printf("\n");
                 break;
             }
         }
 
-        /* Remove newline character from the input line */
         if (line[read - 1] == '\n')
-        {
             line[read - 1] = '\0';
-        }
 
-        /* Handle empty command */
         if (line[0] == '\0')
-        {
             continue;
-        }
 
-        /* Handle command */
         command_handler(line);
     }
 
-    free(line); /* Free the line buffer */
+    free(line);
     return 0;
 }
-
