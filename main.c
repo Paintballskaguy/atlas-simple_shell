@@ -17,13 +17,16 @@ int main(void)
         status = getline(&line, &n, stdin);
         if (status == -1)
         {
-            if (feof(stdin)) /* Handle EOF */
+            /* Handle EOF (Ctrl+D) */
+            if (line)
             {
                 free(line);
-                break;
             }
-            perror("getline failed");
-            continue;
+            if (isatty(STDIN_FILENO)) /* Only print newline in interactive mode */
+            {
+                printf("\n");
+            }
+            break;
         }
 
         /* Remove newline character from the input */
