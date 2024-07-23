@@ -85,9 +85,11 @@ int command_handler(char *cmd)
     else if (pid == 0)
     {
         /* Child process */
-        execve(cmd, args, environ);
-        perror("execve");
-        exit(EXIT_FAILURE);
+        if (execve(cmd, args, environ) == -1)
+        {
+            perror("execve");
+            exit(EXIT_FAILURE);
+        }
     }
     else
     {
@@ -95,6 +97,7 @@ int command_handler(char *cmd)
         waitpid(pid, &status, 0);
         return 0;
     }
+    return 0; /* Ensure function has a return value */
 }
 
 /**
