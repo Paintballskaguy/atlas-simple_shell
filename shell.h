@@ -17,7 +17,6 @@ extern char **environ;
 void init(void);
 void shell_prompt(void);
 int command_handler(char *cmd);
-char *find_command(char *command);
 void handle_signal(int sig);
 
 #endif /* SHELL_H */
