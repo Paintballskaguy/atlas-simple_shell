@@ -40,7 +40,7 @@ void init(void)
     {
         while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp()))
             kill(GBSH_PID, SIGTTIN);
-        setpgid(GBSH_PID, GGBSH_PID);
+        setpgid(GBSH_PID, GBSH_PID);
         GBSH_PGID = getpgrp();
         if (GBSH_PID != GBSH_PGID)
         {
