@@ -70,6 +70,12 @@ int command_handler(char *cmd)
     args[0] = cmd;
     args[1] = NULL;
 
+    /* Handle the "exit" command to exit the shell */
+    if (strcmp(cmd, "exit") == 0)
+    {
+        exit(0); /* Exit the shell */
+    }
+
     /* Fork a new process */
     pid = fork();
     if (pid == -1)
@@ -202,13 +208,6 @@ int main(void)
         if (line[0] == '\0')
         {
             continue;
-        }
-
-        /* Handle special "exit" command for test */
-        if (strcmp(line, "exit") == 0)
-        {
-            printf("OK\n");
-            break;
         }
 
         /* Handle command */
