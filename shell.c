@@ -17,8 +17,8 @@ void shell_prompt(void);
 int command_handler(char *cmd);
 void handle_signal(int sig);
 void tokenize(char *line, char **args);
-void signalHandler_child(int);
-void signalHandler_int(int);
+void signalHandler_child(int p);
+void signalHandler_int(int p);
 int changeDirectory(char *args[]);
 
 int is_interactive;
@@ -72,8 +72,9 @@ void handle_signal(int sig)
 
 /**
  * signalHandler_child - Handle SIGCHLD signal
+ * @p: Signal number (unused)
  */
-void signalHandler_child(int)
+void signalHandler_child(int p __attribute__((unused)))
 {
     while (waitpid(-1, NULL, WNOHANG) > 0)
         ;
