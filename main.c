@@ -7,7 +7,7 @@
  */
 int main(void)
 {
-    char *line;
+    char *line = NULL;
     size_t len = 0;
     ssize_t read;
     char *argv[2];
@@ -45,14 +45,3 @@ int main(void)
     free(line);
     return (0);
 }
-            free(line);
-            exit(EXIT_SUCCESS);
-        }
-
-        execute_command(args);
-    }
-
-    free(line);
-    return 0;
-}
-

@@ -1,8 +1,13 @@
 #include "shell.h"
 
-/* Display the shell prompt */
+/**
+ * prompt - Displays the shell prompt
+ */
 void prompt(void)
 {
-    printf("#cisfun$ ");
+    if (isatty(STDIN_FILENO))
+    {
+        printf("#cisfun$ ");
+        fflush(stdout);
+    }
 }
-
