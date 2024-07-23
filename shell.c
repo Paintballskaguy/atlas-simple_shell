@@ -17,8 +17,8 @@ void shell_prompt(void);
 int command_handler(char *cmd);
 void handle_signal(int sig);
 void tokenize(char *line, char **args);
-void signalHandler_child(int p);
-void signalHandler_int(int p);
+void signalHandler_child(int);
+void signalHandler_int(int);
 int changeDirectory(char *args[]);
 
 int is_interactive;
@@ -40,7 +40,7 @@ void init(void)
     {
         while (tcgetpgrp(STDIN_FILENO) != (GBSH_PGID = getpgrp()))
             kill(GBSH_PID, SIGTTIN);
-        setpgid(GBSH_PID, GBSH_PID);
+        setpgid(GBSH_PID, GGBSH_PID);
         GBSH_PGID = getpgrp();
         if (GBSH_PID != GBSH_PGID)
         {
@@ -72,9 +72,8 @@ void handle_signal(int sig)
 
 /**
  * signalHandler_child - Handle SIGCHLD signal
- * @p: Signal number
  */
-void signalHandler_child(int p)
+void signalHandler_child(int)
 {
     while (waitpid(-1, NULL, WNOHANG) > 0)
         ;
