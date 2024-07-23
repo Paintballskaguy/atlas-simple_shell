@@ -30,6 +30,7 @@ char *get_path(void)
  *
  * Return: Exit status of the command
  */
+
 int execute(char **argv)
 {
 	char *path, *cmd = NULL;
@@ -69,13 +70,13 @@ int execute(char **argv)
 		{
 			fprintf(stderr, "%s: command not found\n", argv[0]);
 			free(path_dup);
-			return 127; // Command not found
+			return; /* Command not found */
 		}
 	}
 	else
 	{
 		fprintf(stderr, "%s: command not found\n", argv[0]);
-		return 127; // Command not found
+		return; /* Command not found */
 	}
 
 	pid = fork();
@@ -83,7 +84,7 @@ int execute(char **argv)
 	{
 		perror("fork");
 		free(path_dup);
-		return 1;
+		return;
 	}
 	if (pid == 0)
 	{
