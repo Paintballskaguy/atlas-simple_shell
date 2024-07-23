@@ -29,6 +29,9 @@ int main(void)
         if (line[read - 1] == '\n')
             line[read - 1] = '\0';
 
+        /* Trim leading and trailing spaces */
+        line = trim_whitespace(line);
+
         if (strcmp(line, "exit") == 0)
         {
             free(line);
@@ -41,5 +44,6 @@ int main(void)
         execute(argv);
     }
 
+    free(line);
     return (0);
 }
