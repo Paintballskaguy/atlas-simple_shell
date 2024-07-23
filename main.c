@@ -13,8 +13,9 @@ int main(void)
         status = getline(&line, &n, stdin);
         if (status == -1)
         {
-            if (feof(stdin)) /* Handle end of file (Ctrl+D) */
+            if (line) /* If line is not NULL, it's an EOF condition */
             {
+                free(line);
                 break;
             }
             perror("getline failed");
