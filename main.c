@@ -42,6 +42,7 @@ int main(void)
 		argv[1] = NULL;
 
 		execute(argv);
+		free(line);
 	}
 
 	return (0);
