@@ -5,57 +5,57 @@
  *
  * Return: Always 0 (Success)
  */
+
 int main(void)
 {
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    char **argv;
-    char *original_line = NULL;
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	char **argv;
+	char *trimmed_line;
 
-    while (1)
-    {
-        prompt();
+	while (1)
+	{
+		prompt();
 
-        read = getline(&line, &len, stdin);
-        if (read == -1)
-        {
-            /* Handle EOF (Ctrl+D) */
-            if (line)
-                free(line);
-            break;
-        }
+		read = getline(&line, &len, stdin);
+		if (read == -1)
+		{
+			/* Handle EOF (Ctrl+D) */
+			if (line)
+				free(line);
+			break;
+		}
 
-        /* Remove newline character from the input */
-        if (line[read - 1] == '\n')
-            line[read - 1] = '\0';
+		/* Remove newline character from the input */
+		if (line[read - 1] == '\n')
+			line[read - 1] = '\0';
 
-        /* Trim leading and trailing spaces */
-        original_line = line;
-        line = trim_whitespace(line);
+		/* Trim leading and trailing spaces */
+		trimmed_line = trim_whitespace(line);
 
-		  /* Skip empty input */
-        if (line[0] == '\0')
-        {
-            free(original_line);
-            continue;
-        }
+		/* Skip empty input */
+		if (trimmed_line[0] == '\0')
+		{
+			free(line);
+			continue;
+		}
 
-        if (strcmp(line, "exit") == 0)
-        {
-            free(original_line);
-            break;
-        }
+		if (strcmp(trimmed_line, "exit") == 0)
+		{
+			free(line);
+			break;
+		}
 
-        /* Split the line into arguments */
-        argv = split_line(line);
+		/* Split the line into arguments */
+		argv = split_line(trimmed_line);
 
-        execute(argv);
+		execute(argv);
 
-        free(argv);
-        free(original_line);
-        line = NULL;  /* Reset line to NULL to prevent double free */
-    }
+		free(argv);
+		free(line);
+		line = NULL; /* Reset line to NULL to prevent double free */
+	}
 
-    return (0);
+	return (0);
 }
