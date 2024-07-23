@@ -4,31 +4,46 @@ int main(void)
 {
     char *line = NULL;
     size_t n = 0;
-    char *args[1024]; /* Max args (adjust as needed) */
+    char *args[2]; /* Array to store command and NULL */
     ssize_t status;
-    int i;
 
-    while (1) {
+    while (1)
+    {
         prompt();
         status = getline(&line, &n, stdin);
-        if (status == -1) {
-            break; /* Exit if getline fails (e.g., EOF) */
+        if (status == -1)
+        {
+            if (feof(stdin)) /* Handle end of file (Ctrl+D) */
+            {
+                break;
+            }
+            perror("getline failed");
+            continue;
         }
 
-        /* Tokenize input into arguments */
+        /* Remove newline character from the input */
+        if (line[status - 1] == '\n')
+        {
+            line[status - 1] = '\0';
+        }
+
+        /* Tokenize input into command */
         args[0] = strtok(line, " \t\n");
-        i = 1;
-        while (args[i - 1] != NULL) {
-            args[i] = strtok(NULL, " \t\n");
-            i++;
+        args[1] = NULL;
+
+        /* Handle empty input */
+        if (args[0] == NULL)
+        {
+            continue;
         }
 
         /* Handle "exit" command */
-        if (args[0] != NULL && strcmp(args[0], "exit") == 0) {
+        if (strcmp(args[0], "exit") == 0)
+        {
             break;
         }
 
-        execute_command(args[0], args);
+        execute_command(args);
     }
 
     free(line);
