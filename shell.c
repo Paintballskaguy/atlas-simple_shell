@@ -10,6 +10,9 @@ int command_handler(char *cmd);
 char *find_command(char *command);
 void handle_signal(int sig);
 
+/* Global variable to check if the shell is interactive */
+int is_interactive;
+
 /**
  * init - Initialize the shell
  */
@@ -17,6 +20,9 @@ void init(void)
 {
     /* Handle signals */
     signal(SIGINT, handle_signal);
+
+    /* Determine if the shell is interactive */
+    is_interactive = isatty(STDIN_FILENO);
 }
 
 /**
@@ -27,9 +33,12 @@ void handle_signal(int sig)
 {
     if (sig == SIGINT)
     {
-        printf("\n"); /* Print a new line */
-        shell_prompt(); /* Display the prompt again */
-        fflush(stdout); /* Flush the output buffer */
+        if (is_interactive)
+        {
+            printf("\n"); /* Print a new line */
+            shell_prompt(); /* Display the prompt again */
+            fflush(stdout); /* Flush the output buffer */
+        }
     }
 }
 
@@ -38,8 +47,11 @@ void handle_signal(int sig)
  */
 void shell_prompt(void)
 {
-    printf("#cisfun$ ");
-    fflush(stdout);
+    if (is_interactive)
+    {
+        printf("#cisfun$ ");
+        fflush(stdout);
+    }
 }
 
 /**
@@ -162,7 +174,7 @@ int main(void)
     while (1)
     {
         shell_prompt(); /* Display the shell prompt */
-        
+
         read = getline(&line, &len, stdin); /* Read input from the user */
         if (read == -1)
         {
