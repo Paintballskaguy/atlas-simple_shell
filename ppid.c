@@ -1,17 +1,10 @@
-#include <stdio.h>
-#include <unistd.h>
+#include "shell.h"
 
-/**
- * main - PPID
- *
- * Return: Always 0.
- */
-int main(void)
+void print_ppid(void)
 {
     pid_t parent_pid;
 
     parent_pid = getppid();
     printf("%u\n", parent_pid);
-    return (0);
 }
 

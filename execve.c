@@ -1,12 +1,6 @@
-#include <stdio.h>
-#include <unistd.h>
+#include "shell.h"
 
-/**
- * main - execve example
- *
- * Return: Always 0.
- */
-int main(void)
+void run_execve(void)
 {
     char *argv[] = {"/bin/ls", "-l", "/usr/", NULL};
 
@@ -15,6 +9,5 @@ int main(void)
         perror("Error:");
     }
     printf("After execve\n");
-    return (0);
 }
 
