@@ -9,14 +9,20 @@ int main(void)
 
     while (1)
     {
-        prompt();
+        if (isatty(STDIN_FILENO)) /* Check if input is from terminal */
+        {
+            prompt();
+        }
+
         status = getline(&line, &n, stdin);
         if (status == -1)
         {
             /* Handle EOF (Ctrl+D) */
-            printf("\n");
-            free(line);
-            exit(EXIT_SUCCESS);
+            if (line)
+            {
+                free(line);
+            }
+            break;
         }
 
         /* Remove newline character from the input */
