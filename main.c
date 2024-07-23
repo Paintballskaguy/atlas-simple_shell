@@ -19,20 +19,19 @@ int main(void)
         read = getline(&line, &len, stdin);
         if (read == -1)
         {
-            if (feof(stdin))
-            {
-                /* Handle EOF (Ctrl+D) */
-                break;
-            }
-            perror("getline");
-            continue;
+            /* Handle EOF (Ctrl+D) */
+            if (line)
+                free(line);
+            break;
         }
 
         /* Remove newline character from the input */
-        line[read - 1] = '\0';
+        if (line[read - 1] == '\n')
+            line[read - 1] = '\0';
 
         if (strcmp(line, "exit") == 0)
         {
+            free(line);
             break;
         }
 
@@ -42,6 +41,5 @@ int main(void)
         execute(argv);
     }
 
-    free(line);
     return (0);
 }
