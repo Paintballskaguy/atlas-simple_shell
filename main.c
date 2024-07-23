@@ -17,12 +17,13 @@ int main(void)
         status = getline(&line, &n, stdin);
         if (status == -1)
         {
-            /* Handle EOF (Ctrl+D) */
-            if (line)
+            if (feof(stdin)) /* Handle EOF */
             {
                 free(line);
+                break;
             }
-            break;
+            perror("getline failed");
+            continue;
         }
 
         /* Remove newline character from the input */
@@ -44,7 +45,8 @@ int main(void)
         /* Handle "exit" command */
         if (strcmp(args[0], "exit") == 0)
         {
-            break;
+            free(line);
+            exit(EXIT_SUCCESS);
         }
 
         execute_command(args);
