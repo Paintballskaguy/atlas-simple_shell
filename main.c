@@ -52,12 +52,7 @@ int main(void)
 		/* Split the line into arguments */
 		argv = split_line(trimmed_line);
 
-		execute(argv);
-
-		if (WIFEXITED(status))
-		{
-			status = WEXITSTATUS(status);
-		}
+		status = execute(argv);
 
 		free(argv);
 		free(line);
