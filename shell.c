@@ -166,13 +166,7 @@ int main(void)
         read = getline(&line, &len, stdin); /* Read input from the user */
         if (read == -1)
         {
-            if (feof(stdin))
-            {
-                /* Handle end-of-file condition (Ctrl+D) */
-                printf("\n");
-                break;
-            }
-            else if (errno == EINTR)
+            if (errno == EINTR)
             {
                 /* Interrupted by signal */
                 clearerr(stdin); /* Clear the error */
@@ -180,7 +174,8 @@ int main(void)
             }
             else
             {
-                perror("getline");
+                /* Handle end-of-file condition or other errors */
+                printf("\n");
                 break;
             }
         }
