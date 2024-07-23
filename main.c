@@ -1,53 +1,50 @@
 #include "shell.h"
 
+/**
+ * main - Entry point of the shell
+ *
+ * Return: Always 0 (Success)
+ */
 int main(void)
 {
-    char *line = NULL;
-    size_t n = 0;
-    char *args[2]; /* Array to store command and NULL */
-    ssize_t status;
+    char *line;
+    size_t len = 0;
+    ssize_t read;
+    char *argv[2];
 
     while (1)
     {
-        if (isatty(STDIN_FILENO)) /* Check if input is from terminal */
-        {
-            prompt();
-        }
+        prompt();
 
-        status = getline(&line, &n, stdin);
-        if (status == -1)
+        read = getline(&line, &len, stdin);
+        if (read == -1)
         {
-            /* Handle EOF (Ctrl+D) */
-            if (line)
+            if (feof(stdin))
             {
-                free(line);
+                /* Handle EOF (Ctrl+D) */
+                break;
             }
-            if (isatty(STDIN_FILENO)) /* Only print newline in interactive mode */
-            {
-                printf("\n");
-            }
-            break;
-        }
-
-        /* Remove newline character from the input */
-        if (line[status - 1] == '\n')
-        {
-            line[status - 1] = '\0';
-        }
-
-        /* Tokenize input into command */
-        args[0] = strtok(line, " \t\n");
-        args[1] = NULL;
-
-        /* Handle empty input */
-        if (args[0] == NULL)
-        {
+            perror("getline");
             continue;
         }
 
-        /* Handle "exit" command */
-        if (strcmp(args[0], "exit") == 0)
+        /* Remove newline character from the input */
+        line[read - 1] = '\0';
+
+        if (strcmp(line, "exit") == 0)
         {
+            break;
+        }
+
+        argv[0] = line;
+        argv[1] = NULL;
+
+        execute(argv);
+    }
+
+    free(line);
+    return (0);
+}
             free(line);
             exit(EXIT_SUCCESS);
         }

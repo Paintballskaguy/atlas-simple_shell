@@ -8,10 +8,8 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 
-extern char **environ;
-
 void prompt(void);
-void execute_command(char **args);
+void execute(char **argv);
 
 #endif /* SHELL_H */
 
