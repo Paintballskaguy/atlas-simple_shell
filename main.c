@@ -38,6 +38,7 @@ int main(void)
 		if (trimmed_line[0] == '\0')
 		{
 			free(line);
+			line = NULL;
 			continue;
 		}
 
