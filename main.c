@@ -7,39 +7,42 @@
  */
 int main(void)
 {
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    char *argv[2];
+	char *line = NULL;
+	size_t len = 0;
+	ssize_t read;
+	char *argv[2];
 
-    while (1)
-    {
-        prompt();
+	while (1)
+	{
+		prompt();
 
-        read = getline(&line, &len, stdin);
-        if (read == -1)
-        {
-            /* Handle EOF (Ctrl+D) */
-            if (line)
-                free(line);
-            break;
-        }
+		read = getline(&line, &len, stdin);
+		if (read == -1)
+		{
+			/* Handle EOF (Ctrl+D) */
+			if (line)
+				free(line);
+			break;
+		}
 
-        /* Remove newline character from the input */
-        if (line[read - 1] == '\n')
-            line[read - 1] = '\0';
+		/* Remove newline character from the input */
+		if (line[read - 1] == '\n')
+			line[read - 1] = '\0';
 
-        if (strcmp(line, "exit") == 0)
-        {
-            free(line);
-            break;
-        }
+		/* Trim leading and trailing spaces */
+		line = trim_whitespace(line);
 
-        argv[0] = line;
-        argv[1] = NULL;
+		if (strcmp(line, "exit") == 0)
+		{
+			free(line);
+			break;
+		}
 
-        execute(argv);
-    }
+		argv[0] = line;
+		argv[1] = NULL;
 
-    return (0);
+		execute(argv);
+	}
+
+	return (0);
 }
