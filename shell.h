@@ -7,17 +7,11 @@
 #include <string.h>
 #include <sys/types.h>
 #include <sys/wait.h>
-#include <signal.h>
-#include <errno.h>
 
-/* External declaration for environ */
 extern char **environ;
 
-/* Function prototypes */
-void init(void);
-void shell_prompt(void);
-int command_handler(char *cmd);
-void handle_signal(int sig);
+void prompt(void);
+void execute_command(char *command, char **args);
 
 #endif /* SHELL_H */
 
