@@ -43,6 +43,6 @@ int main(void)
 
 		execute(argv);
 	}
-
+	free(line);
 	return (0);
 }
