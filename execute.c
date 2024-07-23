@@ -70,13 +70,13 @@ int execute(char **argv)
 		{
 			fprintf(stderr, "%s: command not found\n", argv[0]);
 			free(path_dup);
-			return; /* Command not found */
+			return (127); /* Command not found */
 		}
 	}
 	else
 	{
 		fprintf(stderr, "%s: command not found\n", argv[0]);
-		return; /* Command not found */
+		return (127); /* Command not found */
 	}
 
 	pid = fork();
@@ -84,7 +84,7 @@ int execute(char **argv)
 	{
 		perror("fork");
 		free(path_dup);
-		return;
+		return (1);
 	}
 	if (pid == 0)
 	{

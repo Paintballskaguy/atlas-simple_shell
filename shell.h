@@ -13,10 +13,11 @@
 #define TOK_DELIM " \t\r\n\a"
 
 void prompt(void);
-void execute(char **argv);
+int execute(char **argv)
 char *trim_whitespace(char *str);
 char **split_line(char *line);
 char *get_path(void);
+
 
 #endif /* SHELL_H */
 
