@@ -34,6 +34,13 @@ int main(void)
         original_line = line;
         line = trim_whitespace(line);
 
+		  /* Skip empty input */
+        if (line[0] == '\0')
+        {
+            free(original_line);
+            continue;
+        }
+
         if (strcmp(line, "exit") == 0)
         {
             free(original_line);
