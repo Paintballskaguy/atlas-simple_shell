@@ -28,6 +28,7 @@ char *get_path(void)
  * execute - Executes a command
  * @argv: Array of arguments
  */
+
 void execute(char **argv)
 {
     char *path, *cmd = NULL;
@@ -43,7 +44,7 @@ void execute(char **argv)
         dir = strtok(path_dup, ":");
     }
 
-    if (access(argv[0], X_OK) == 0)
+    if (access(argv[0], X_OK) == 0 || argv[0][0] == '.' || argv[0][0] == '/')
     {
         cmd = argv[0];
     }
