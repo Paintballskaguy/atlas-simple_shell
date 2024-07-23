@@ -24,7 +24,7 @@ int changeDirectory(char *args[]);
 int is_interactive;
 static pid_t GBSH_PID, GBSH_PGID;
 static struct termios GBSH_TMODES;
-static char *currentDirectory;
+static char currentDirectory[1024];
 
 /**
  * init - Initialize the shell
@@ -50,7 +50,6 @@ void init(void)
         tcsetpgrp(STDIN_FILENO, GBSH_PGID);
         tcgetattr(STDIN_FILENO, &GBSH_TMODES);
     }
-    currentDirectory = (char *)calloc(1024, sizeof(char));
 }
 
 /**
@@ -87,7 +86,7 @@ void shell_prompt(void)
 {
     if (is_interactive)
     {
-        printf("%s@%s %s > ", getenv("LOGNAME"), getenv("HOSTNAME"), getcwd(currentDirectory, 1024));
+        printf("%s@%s %s > ", getenv("LOGNAME"), getenv("HOSTNAME"), getcwd(currentDirectory, sizeof(currentDirectory)));
         fflush(stdout);
     }
 }
@@ -115,7 +114,7 @@ int command_handler(char *cmd)
     }
     else if (strcmp(args[0], "pwd") == 0)
     {
-        printf("%s\n", getcwd(currentDirectory, 1024));
+        printf("%s\n", getcwd(currentDirectory, sizeof(currentDirectory)));
     }
     else if (strcmp(args[0], "clear") == 0)
     {
