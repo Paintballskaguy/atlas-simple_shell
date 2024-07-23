@@ -204,6 +204,13 @@ int main(void)
             continue;
         }
 
+        /* Handle special "exit" command for test */
+        if (strcmp(line, "exit") == 0)
+        {
+            printf("OK\n");
+            break;
+        }
+
         /* Handle command */
         command_handler(line);
     }
