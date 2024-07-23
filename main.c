@@ -13,6 +13,7 @@ int main(void)
 	ssize_t read;
 	char **argv;
 	char *trimmed_line;
+	int status = 0;
 
 	while (1)
 	{
@@ -53,10 +54,15 @@ int main(void)
 
 		execute(argv);
 
+		if (WIFEXITED(status))
+		{
+			status = WEXITSTATUS(status);
+		}
+
 		free(argv);
 		free(line);
 		line = NULL; /* Reset line to NULL to prevent double free */
 	}
 
-	return (0);
+	return (status);
 }

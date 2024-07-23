@@ -25,7 +25,7 @@ char *trim_whitespace(char *str)
         end--;
 
     /* Write new null terminator character */
-    end[1] = '\0';
+    end[1] = ('\0');
 
     return (str);
 }
