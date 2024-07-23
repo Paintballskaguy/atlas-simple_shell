@@ -11,6 +11,7 @@ int main(void)
     size_t len = 0;
     ssize_t read;
     char *argv[2];
+    char *trimmed_line;
 
     while (1)
     {
@@ -30,15 +31,15 @@ int main(void)
             line[read - 1] = '\0';
 
         /* Trim leading and trailing spaces */
-        line = trim_whitespace(line);
+        trimmed_line = trim_whitespace(line);
 
-        if (strcmp(line, "exit") == 0)
+        if (strcmp(trimmed_line, "exit") == 0)
         {
             free(line);
             break;
         }
 
-        argv[0] = line;
+        argv[0] = trimmed_line;
         argv[1] = NULL;
 
         execute(argv);
