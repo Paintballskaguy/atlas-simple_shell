@@ -5,15 +5,16 @@ extern char **environ;
 /**
  * print_env - Prints the current environment variables
  */
+ 
 void print_env(void)
 {
-	char **env = environ;
+    char **env = environ;
 
-	while (*env)
-	{
-		printf("%s\n", *env);
-		env++;
-	}
+    while (*env)
+    {
+        printf("%s\n", *env);
+        env++;
+    }
 }
 
 /**
@@ -21,6 +22,7 @@ void print_env(void)
  *
  * Return: Always 0 (Success)
  */
+
 int main(void)
 {
 	char *line = NULL;
@@ -38,7 +40,8 @@ int main(void)
 		if (read == -1)
 		{
 			/* Handle EOF (Ctrl+D) */
-			free(line);
+			if (line)
+				free(line);
 			break;
 		}
 
@@ -52,18 +55,15 @@ int main(void)
 		/* Skip empty input */
 		if (trimmed_line[0] == '\0')
 		{
+			free(line);
+			line = NULL;
 			continue;
 		}
 
 		if (strcmp(trimmed_line, "exit") == 0)
 		{
+			free(line);
 			break;
-		}
-
-		if (strcmp(trimmed_line, "env") == 0)
-		{
-			print_env();
-			continue;
 		}
 
 		/* Split the line into arguments */
@@ -72,8 +72,9 @@ int main(void)
 		status = execute(argv);
 
 		free(argv);
+		free(line);
+		line = NULL; /* Reset line to NULL to prevent double free */
 	}
 
-	free(line);
-	return status;
+	return (status);
 }
