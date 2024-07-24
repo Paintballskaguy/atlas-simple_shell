@@ -3,82 +3,110 @@
 extern char **environ;
 
 /**
- * print_env - Prints the current environment variables
+ * get_path - Retrieves the PATH environment variable
+ *
+ * Return: A pointer to the value of the PATH variable
  */
-void print_env(void)
+char *get_path(void)
 {
-    char **env = environ;
+	char **env = environ;
+	char *path_prefix = "PATH=";
+	size_t len = strlen(path_prefix);
 
-    while (*env)
-    {
-        printf("%s\n", *env);
-        env++;
-    }
+	while (*env)
+	{
+		if (strncmp(*env, path_prefix, len) == 0)
+		{
+			return *env + len;
+		}
+		env++;
+	}
+	return NULL;
 }
 
 /**
- * main - Entry point of the shell
+ * execute - Executes a command
+ * @argv: Array of arguments
  *
- * Return: Always 0 (Success)
+ * Return: Exit status of the command
  */
-int main(void)
+int execute(char **argv)
 {
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    char **argv;
-    char *trimmed_line;
-    int status = 0;
+	char *path, *cmd = NULL;
+	char *path_env = get_path();
+	char *path_dup = NULL;
+	char *dir = NULL;
+	pid_t pid;
+	int status;
 
-    while (1)
-    {
-        prompt();
+	if (path_env)
+	{
+		path_dup = strdup(path_env);
+		dir = strtok(path_dup, ":");
+	}
 
-        read = getline(&line, &len, stdin);
-        if (read == -1)
-        {
-            /* Handle EOF (Ctrl+D) */
-            free(line);
-            break;
-        }
+	if (access(argv[0], X_OK) == 0 || argv[0][0] == '.' || argv[0][0] == '/')
+	{
+		cmd = argv[0];
+	}
+	else if (path_env)
+	{
+		while (dir != NULL)
+		{
+			path = malloc(strlen(dir) + strlen(argv[0]) + 2);
+			sprintf(path, "%s/%s", dir, argv[0]);
 
-        /* Remove newline character from the input */
-        if (line[read - 1] == '\n')
-            line[read - 1] = '\0';
+			if (access(path, X_OK) == 0)
+			{
+				cmd = path;
+				break;
+			}
+			free(path);
+			dir = strtok(NULL, ":");
+		}
 
-        /* Trim leading and trailing spaces */
-        trimmed_line = trim_whitespace(line);
+		if (dir == NULL)
+		{
+			fprintf(stderr, "%s: command not found\n", argv[0]);
+			free(path_dup);
+			return (127); /* Command not found */
+		}
+	}
+	else
+	{
+		fprintf(stderr, "%s: command not found\n", argv[0]);
+		return (127); /* Command not found */
+	}
 
-        /* Skip empty input */
-        if (trimmed_line[0] == '\0')
-        {
-            continue;
-        }
+	pid = fork();
+	if (pid == -1)
+	{
+		perror("fork");
+		free(path_dup);
+		return (1);
+	}
+	if (pid == 0)
+	{
+		/* Child process */
+		if (execve(cmd, argv, environ) == -1)
+		{
+			perror(argv[0]);
+			exit(1);
+		}
+		exit(EXIT_SUCCESS);
+	}
+	else
+	{
+		/* Parent process */
+		do
+		{
+			waitpid(pid, &status, WUNTRACED);
+		} while (!WIFEXITED(status) && !WIFSIGNALED(status));
+	}
 
-        if (strcmp(trimmed_line, "exit") == 0)
-        {
-            break;
-        }
+	free(path_dup);
+	if (cmd != argv[0])
+		free(cmd);
 
-        if (strcmp(trimmed_line, "env") == 0)
-        {
-            print_env();
-            continue;
-        }
-
-        /* Split the line into arguments */
-        argv = split_line(trimmed_line);
-        if (argv == NULL)
-        {
-            perror("split_line");
-            continue;
-        }
-
-        status = execute(argv);
-
-        free(argv);
-    }
-
-    free(line);
-    return status;
+	return WIFEXITED(status) ? WEXITSTATUS(status) : 1;
 }
