@@ -52,34 +52,35 @@ int main(void)
         /* Skip empty input */
         if (trimmed_line[0] == '\0')
         {
-            free(line);
-            line = NULL;
             continue;
         }
 
         if (strcmp(trimmed_line, "exit") == 0)
         {
-            free(line);
             break;
         }
 
         if (strcmp(trimmed_line, "env") == 0)
         {
             print_env();
-            free(line);
-            line = NULL;
             continue;
         }
 
         /* Split the line into arguments */
         argv = split_line(trimmed_line);
 
+		if (argv == NULL)
+        {
+            perror("split_line");
+            continue;
+        }
+
         status = execute(argv);
 
         free(argv);
-        free(line);
-        line = NULL; /* Reset line to NULL to prevent double free */
     }
+	free(line);
+    line = NULL; /* Reset line to NULL to prevent double free */
 
     return status;
 }
