@@ -17,6 +17,7 @@ int execute(char **argv);
 char *trim_whitespace(char *str);
 char **split_line(char *line);
 char *get_path(void);
+void print_env(void);
 
 
 #endif /* SHELL_H */

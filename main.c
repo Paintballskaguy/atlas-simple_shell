@@ -1,5 +1,20 @@
 #include "shell.h"
 
+
+/**
+ * print_env - Prints the current environment variables
+ */
+void print_env(void)
+{
+    char **env = environ;
+
+    while (*env)
+    {
+        printf("%s\n", *env);
+        env++;
+    }
+}
+
 /**
  * main - Entry point of the shell
  *
@@ -49,6 +64,13 @@ int main(void)
 			break;
 		}
 
+		if (strcmp(trimmed_line, "env") == 0)
+        {
+            print_env();
+            free(line);
+            continue;
+        }
+		
 		/* Split the line into arguments */
 		argv = split_line(trimmed_line);
 
