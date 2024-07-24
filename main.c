@@ -58,6 +58,7 @@ int main(void)
 
 		if (strcmp(trimmed_line, "exit") == 0)
 		{
+			free(line);
 			break;
 		}
 
@@ -79,6 +80,7 @@ int main(void)
 		status = execute(argv);
 
 		free(argv);
+		line = NULL;
 	}
 	free(line);
 
