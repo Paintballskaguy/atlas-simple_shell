@@ -1,6 +1,6 @@
 #include "shell.h"
 
-
+extern char **environ;
 /**
  * print_env - Prints the current environment variables
  */
@@ -70,7 +70,7 @@ int main(void)
             free(line);
             continue;
         }
-		
+
 		/* Split the line into arguments */
 		argv = split_line(trimmed_line);
 
