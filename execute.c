@@ -70,13 +70,13 @@ int execute(char **argv)
         if (cmd == NULL)
         {
             fprintf(stderr, "%s: command not found\n", argv[0]);
-            return 127;  // Command not found
+            return 127; 
         }
     }
     else
     {
         fprintf(stderr, "%s: command not found\n", argv[0]);
-        return 127;  // Command not found
+        return 127;  
     }
 
     pid = fork();
