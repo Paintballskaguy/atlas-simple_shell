@@ -106,5 +106,5 @@ int execute(char **argv)
 	if (cmd != argv[0]) /* If cmd is not the original command */
 		free(cmd);		/* Free the allocated memory for cmd */
 
-	return WIFEEXITED(status) ? WEXITSTATUS(status) : 1; /* Return the status of the executed command */
+	return WIFEXITED(status) ? WEXITSTATUS(status) : 1; /* Return the status of the executed command */
 }
