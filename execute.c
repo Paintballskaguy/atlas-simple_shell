@@ -32,7 +32,8 @@ char *get_path(void)
  */
 int execute(char **argv)
 {
-	char *path, *cmd = NULL;
+	char *path;
+	char *cmd = NULL;
 	char *path_env = get_path(); /* Get the PATH environment variable */
 	char *path_dup = NULL;
 	char *dir = NULL;
@@ -69,13 +70,13 @@ int execute(char **argv)
 		{
 			fprintf(stderr, "%s: command not found\n", argv[0]); /* Print error if command not found */
 			free(path_dup);										 /* Free the duplicated PATH string */
-			return 127;											 /* Return error status */
+			return 127;	/* Command not found exit status */										 /* Return error status */
 		}
 	}
 	else
 	{
 		fprintf(stderr, "%s: command not found\n", argv[0]); /* Print error if PATH is not set */
-		return 127;											 /* Return error status */
+		return 127;	/* Command not found exit status */										 /* Return error status */
 	}
 
 	pid = fork();  /* Create a new process */
@@ -105,5 +106,5 @@ int execute(char **argv)
 	if (cmd != argv[0]) /* If cmd is not the original command */
 		free(cmd);		/* Free the allocated memory for cmd */
 
-	return status; /* Return the status of the executed command */
+	return WIFEEXITED(status) ? WEXITSTATUS(status) : 1; /* Return the status of the executed command */
 }
