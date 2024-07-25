@@ -1,19 +1,19 @@
 #include "shell.h"
 
-extern char **environ;
+extern char **environ; /* Declare external environment variable */
 
 /**
  * print_env - Prints the current environment variables
  */
 void print_env(void)
 {
-    char **env = environ;
+	char **env = environ; /* Initialize env to point to the environment variables */
 
-    while (*env)
-    {
-        printf("%s\n", *env);
-        env++;
-    }
+	while (*env) /* Loop through the environment variables */
+	{
+		printf("%s\n", *env); /* Print each environment variable */
+		env++;				  /* Move to the next environment variable */
+	}
 }
 
 /**
@@ -23,63 +23,63 @@ void print_env(void)
  */
 int main(void)
 {
-    char *line = NULL;
-    size_t len = 0;
-    ssize_t read;
-    char **argv;
-    char *trimmed_line;
-    int status = 0;
+	char *line = NULL;	/* Pointer to hold the input line */
+	size_t len = 0;		/* Variable to hold the length of the input line */
+	ssize_t read;		/* Variable to hold the number of characters read */
+	char **argv;		/* Array to hold the command and its arguments */
+	char *trimmed_line; /* Pointer to hold the trimmed input line */
+	int status = 0;		/* Variable to hold the status of the last executed command */
 
-    while (1)
-    {
-        prompt();
+	while (1) /* Infinite loop to keep the shell running */
+	{
+		prompt(); /* Display the shell prompt */
 
-        read = getline(&line, &len, stdin);
-        if (read == -1)
-        {
-            /* Handle EOF (Ctrl+D) */
-            free(line);
-            break;
-        }
+		read = getline(&line, &len, stdin); /* Read input from the user */
+		if (read == -1)						/* Check if end of file (Ctrl+D) is reached */
+		{
+			/* Handle EOF (Ctrl+D) */
+			free(line); /* Free the memory allocated for the input line */
+			break;		/* Exit the loop */
+		}
 
-        /* Remove newline character from the input */
-        if (line[read - 1] == '\n')
-            line[read - 1] = '\0';
+		/* Remove newline character from the input */
+		if (line[read - 1] == '\n')
+			line[read - 1] = '\0';
 
-        /* Trim leading and trailing spaces */
-        trimmed_line = trim_whitespace(line);
+		/* Trim leading and trailing spaces */
+		trimmed_line = trim_whitespace(line);
 
-        /* Skip empty input */
-        if (trimmed_line[0] == '\0')
-        {
-            free(line);
-            line = NULL;
-            continue;
-        }
+		/* Skip empty input */
+		if (trimmed_line[0] == '\0')
+		{
+			free(line);	 /* Free the memory allocated for the input line */
+			line = NULL; /* Reset the line pointer to NULL */
+			continue;	 /* Continue to the next iteration of the loop */
+		}
 
-        if (strcmp(trimmed_line, "exit") == 0)
-        {
-            free(line);
-            break;
-        }
+		if (strcmp(trimmed_line, "exit") == 0) /* Check if the user typed "exit" */
+		{
+			free(line); /* Free the memory allocated for the input line */
+			break;		/* Exit the loop */
+		}
 
-        if (strcmp(trimmed_line, "env") == 0)
-        {
-            print_env();
-            free(line);
-            line = NULL;
-            continue;
-        }
+		if (strcmp(trimmed_line, "env") == 0) /* Check if the user typed "env" */
+		{
+			print_env(); /* Print the environment variables */
+			free(line);	 /* Free the memory allocated for the input line */
+			line = NULL; /* Reset the line pointer to NULL */
+			continue;	 /* Continue to the next iteration of the loop */
+		}
 
-        /* Split the line into arguments */
-        argv = split_line(trimmed_line);
+		/* Split the line into arguments */
+		argv = split_line(trimmed_line);
 
-        status = execute(argv);
+		status = execute(argv); /* Execute the command */
 
-        free(argv);
-        free(line);
-        line = NULL; /* Reset line to NULL to prevent double free */
-    }
+		free(argv);	 /* Free the memory allocated for the arguments */
+		free(line);	 /* Free the memory allocated for the input line */
+		line = NULL; /* Reset the line pointer to NULL to prevent double free */
+	}
 
-    return status;
+	return status; /* Return the status of the last executed command */
 }

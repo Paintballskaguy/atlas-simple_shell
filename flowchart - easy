@@ -1,0 +1,77 @@
+1. Start the Program
+      |
+      v
+2. Set up some initial values (like preparing a blank page to write on)
+      |
+      v
+3. Show a prompt to the user and wait for them to type something
+      |
+      v
+4. Did the user type something and press Enter?
+   /       \
+  /         \
+ Yes         No
+/             \
+5. If no,    | 7. If yes, clean up the input (like erasing extra spaces)
+   end the   |  
+   program.  |     
+             |              
+             |              
+             |              
+              v              
+6. Is the cleaned input empty?
+   /         \
+  /           \
+ Yes           No
+/               \
+8. If yes,     | 10. If no, check if the user typed "exit"
+   wait for    |
+   the user    |
+   to type     |
+   again.      |   
+               |              
+               v              
+9. If the user typed "exit," stop the program
+              /        \
+             /          \
+         Yes            No
+        /               \
+       v                 \
+11. If the user didn't   | 13. If the user typed "env," show all environment settings (like showing all available tools)
+    type "exit,"        |   
+    check if they typed | 
+    "env"               |       
+                       |   
+                       v       
+12. Show environment    \
+    settings.           15. If the user typed anything else, break the input into parts (like separating words)
+                       |
+                       v
+14. Wait for the user   16. Run the command they typed and show the result
+    to type something
+    new
+                       |
+                       v
+17. Clean up and get ready to repeat
+                       |
+                       v
+18. Loop back to step 3
+
+
+Steps Explained in Simple Terms:
+Start the Program: Begin running the shell.
+Set up Initial Values: Prepare some initial settings and variables.
+Show a Prompt: Display a prompt (like "$") and wait for the user to type something.
+User Types Something?: Check if the user has typed something and pressed Enter.
+If No Input: If the user didn't type anything, end the program.
+Clean the Input: If the user typed something, remove any unnecessary spaces.
+Is Input Empty?: Check if the cleaned input is empty.
+If Input is Empty: If the input is empty, wait for the user to type again.
+If Input is "Exit": If the user typed "exit," stop the program.
+Check for "Env": If the input is not "exit," check if the user typed "env."
+Show Environment Settings: If the user typed "env," display all environment settings.
+Wait for New Input: Wait for the user to type something new.
+Break Input into Parts: If the user typed something else, break the input into parts (words).
+Run the Command: Execute the command the user typed and show the result.
+Clean Up: Clean up and prepare to repeat the process.
+Loop Back: Go back to showing the prompt and waiting for new input.

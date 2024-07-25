@@ -1,0 +1,64 @@
+   Start
+     |
+     v
+Initialize variables:
+line = NULL
+len = 0
+status = 0
+     |
+     v
+  +-----------------------+
+  |  Display prompt       |
+  |  read = getline(...)  |
+  +-----------------------+
+     |
+     v
+ Is read == -1 ?
+   /       \
+  /         \
+ Yes         No
+/             \
+Handle EOF    +------------------------------+
+              | Remove newline from input    |
+              | trimmed_line = trim_whitespace(line)  |
+              +------------------------------+
+                              |
+                              v
+              Is trimmed_line[0] == '\0' ?
+                   /        \
+                  /          \
+                Yes          No
+              /              \
+Free line,   |  +------------------------------+
+line = NULL  |  | Is trimmed_line == "exit" ?  |
+             |  +------------------------------+
+             |                |
+             |                v
+             |    Yes     /         \   No
+             |  /        /           \
+             v v       /             \
+           +------------------------------+
+           | Exit program, free line      |
+           +------------------------------+
+                              |
+                              v
+              +-------------------------------------+
+              | Is trimmed_line == "env" ?          |
+              +-------------------------------------+
+                              |
+                              v
+              Yes         /         \   No
+            /            /           \
+           v v         /             \
+           +-------------------------+  +-------------------------+
+           | print_env()             |  | argv = split_line(trimmed_line) |
+           +-------------------------+  +-------------------------+
+                              |                      |
+                              v                      v
+              Free line, line = NULL       status = execute(argv)
+                              |
+                              v
+                        Free argv
+                              |
+                              v
+             Loop back to Display prompt
