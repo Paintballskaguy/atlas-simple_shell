@@ -19,6 +19,8 @@ char **split_line(char *line);
 char *get_path(void);
 void print_env(void);
 void welcome_screen();
+void open_new_terminal(void);
+void close_terminal(void);
 
 
 #endif /* SHELL_H */

@@ -23,24 +23,25 @@ void print_env(void)
  */
 int main(void)
 {
-	char *line = NULL;	/* Pointer to hold the input line */
-	size_t len = 0;		/* Variable to hold the length of the input line */
-	ssize_t read;		/* Variable to hold the number of characters read */
-	char **argv;		/* Array to hold the command and its arguments */
-	char *trimmed_line; /* Pointer to hold the trimmed input line */
-	int status = 0;		/* Variable to hold the status of the last executed command */
+	char *line = NULL;						/* Pointer to hold the input line */
+	size_t len = 0;							/* Variable to hold the length of the input line */
+	ssize_t read;							/* Variable to hold the number of characters read */
+	char **argv;							/* Array to hold the command and its arguments */
+	char *trimmed_line;						/* Pointer to hold the trimmed input line */
+	int status = 0;							/* Variable to hold the status of the last executed command */
 	int interactive = isatty(STDIN_FILENO); /* Check if the shell is interactive */
 
-	if (interactive)  /* Display the welcome screen if interactive */
+	if (interactive) /* Display the welcome screen if interactive */
 	{
 		welcome_screen();
+		open_new_terminal();
 	}
 
 	while (1) /* Infinite loop to keep the shell running */
 	{
 		if (interactive)
 		{
-		prompt(); /* Display the shell prompt */
+			prompt(); /* Display the shell prompt */
 		}
 
 		read = getline(&line, &len, stdin); /* Read input from the user */
@@ -88,6 +89,11 @@ int main(void)
 		free(argv);	 /* Free the memory allocated for the arguments */
 		free(line);	 /* Free the memory allocated for the input line */
 		line = NULL; /* Reset the line pointer to NULL to prevent double free */
+	}
+
+	if (interactive)
+	{
+		close_terminal();
 	}
 
 	return status; /* Return the status of the last executed command */
