@@ -29,10 +29,19 @@ int main(void)
 	char **argv;		/* Array to hold the command and its arguments */
 	char *trimmed_line; /* Pointer to hold the trimmed input line */
 	int status = 0;		/* Variable to hold the status of the last executed command */
+	int interactive = isatty(STDIN_FILENO); /* Check if the shell is interactive */
+
+	if (interactive)
+	{
+		welcome_screen();
+	}
 
 	while (1) /* Infinite loop to keep the shell running */
 	{
+		if (interactive)
+		{
 		prompt(); /* Display the shell prompt */
+		}
 
 		read = getline(&line, &len, stdin); /* Read input from the user */
 		if (read == -1)						/* Check if end of file (Ctrl+D) is reached */
