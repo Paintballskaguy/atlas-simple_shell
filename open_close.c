@@ -9,9 +9,10 @@ pid_t terminal_pid = 0;
 void open_new_terminal(void)
 {
 	terminal_pid = fork();
+
 	if (terminal_pid == 0)
 	{
-		execlp("gnome-terminal", "gnome-terminal", "--", "/bin/bash", (char *)NULL);
+		execlp("/usr/bin/gnome-terminal", "gnome-terminal", "--", "/bin/bash", (char *)NULL);
 		perror("execlp");
 		exit(EXIT_FAILURE);
 	}
