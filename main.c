@@ -31,7 +31,7 @@ int main(void)
 	int status = 0;		/* Variable to hold the status of the last executed command */
 	int interactive = isatty(STDIN_FILENO); /* Check if the shell is interactive */
 
-	if (interactive)
+	if (interactive)  /* Display the welcome screen if interactive */
 	{
 		welcome_screen();
 	}
