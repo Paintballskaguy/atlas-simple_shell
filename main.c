@@ -34,7 +34,6 @@ int main(void)
 	if (interactive) /* Display the welcome screen if interactive */
 	{
 		welcome_screen();
-		open_new_terminal();
 	}
 
 	while (1) /* Infinite loop to keep the shell running */
@@ -89,11 +88,6 @@ int main(void)
 		free(argv);	 /* Free the memory allocated for the arguments */
 		free(line);	 /* Free the memory allocated for the input line */
 		line = NULL; /* Reset the line pointer to NULL to prevent double free */
-	}
-
-	if (interactive)
-	{
-		close_terminal();
 	}
 
 	return status; /* Return the status of the last executed command */
