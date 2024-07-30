@@ -1,70 +1,27 @@
-.\" Copyright (c) 2024 by Jose N. Olmos (jose.n.olmos@outlook.com)
-.TH ITEM 0  2024-07-01 "TEAM MEMBERS" "Atlas Programmer's Manual"
-
+.TH ATLAS-SIMPLE_SHELL 1 "July 2024" "1.0" "Atlas-simple_shell Manual"
 .SH NAME
-item \- quick ref
-
+atlas-simple_shell \- a basic terminal shell
 .SH SYNOPSIS
-.nf
-.B #include <stdlib.h>
-.PP
-.BI "int func(int " c ");
-.fi
-
+.B atlas-simple_shell
 .SH DESCRIPTION
-description
-
-.SS Subsection
-subsection text
-
-.EX
-an example where code would be written out. followed by (EE) example end
-.EE
-
-.RS -4
-Relative (Indent -4) Start
-.RE
-.PP
-regular paragraph
-.RS 4
-Relative (Indent 4) Start
-.RE
-
-.TP 4
-tagged paragraph
-
-.TP
-.B o
-description of option o.
-.TP
-.B A
-description of option A.
-
-.SH RETURN VALUE
-return value
-
-.SH ATTRIBUTES
-attributes
-
-.SH CONFORMING TO
-Betty Style, Nicole Standards
-
-.SH NOTES
-notes
-.B bold text
-.BI "alternate bold "and " then "italic
-.BR alternate bold and then regular
-.IR alternate italic and then regular
-.I just an italic sentence
-
-.SH BUGS
-bugs
-
+The
+.B atlas-simple_shell
+is a basic terminal shell that provides a simple command-line interface.
+It allows users to execute commands and interact with the file system.
+.SH USAGE
+To start the shell, run:
+.B ./hsh
+.SH OPTIONS
+No options are available for this command.
 .SH EXAMPLES
-examples
-
+Start the shell:
+.B ./hsh
+List files in the current directory:
+.B ls
+.SH AUTHOR
+Khiry Dixon-Manning <khiry.dixon-manning@atlasschool.com>
+and John Wilson <john.wilson@atlasschool.com>
 .SH SEE ALSO
-.BR otheritem (0),
-
-.SH COLOPHON
-colophon
+.B bash(1),
+.B zsh(1),
+.B sh(1)
