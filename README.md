@@ -129,7 +129,20 @@ If you'd like to contribute to this project (we love help from fellow ninjas!), 
 - Code optimization
 ### License
 This project is licensed under the MIT License. See the LICENSE file for more details.
+### Breakthrough
+The "TMNT sewer navigation" concept emerged:
+- **Directory traversal** = sewer exploration
+- **Commands** = ninja tools
+- **Error messages** = Shredder attacks to overcome
 
+### Technical Hurdles
+1. **Memory Leaks in PATH Handling**  
+   After 3 days debugging segfaults, implemented custom allocator with ring-buffer pattern
+   ```c
+   char *safe_alloc(size_t size) {
+       static char buffer[ALLOC_BUFFER_SIZE];
+       /* Ring buffer implementation */
+   }
 ### Acknowledgments
 Teenage Mutant Ninja Turtles: For their endless inspiration.
 Open-source community: For their invaluable resources and support.
@@ -151,3 +164,4 @@ Bridges machine learning theory with systems implementation. Specializing in AI-
 
 
 - Khiry Dixon-Manning
+
