@@ -6,7 +6,7 @@
 **Atlas-simple_shell** is a basic terminal shell that allows users to interact with the file system and execute commands. Inspired by the Teenage Mutant Ninja Turtles, it provides a simple command-line interface for listing commands and files, making it easy to navigate your computer's directory like a ninja in the sewers of New York City.
 
 ## The Flow - Technical version
-![Our Flow for how the shell works.](./flowchart-technical "Technical Flow Chart")
+![Our Flow for how the shell works.](flowchart - technical "Technical Flow Chart")
 
 ## Installation
 To build and use **Atlas-simple_shell**, follow these steps:
@@ -167,6 +167,7 @@ Bridges machine learning theory with systems implementation. Specializing in AI-
 
 
 - Khiry Dixon-Manning
+
 
 
 
